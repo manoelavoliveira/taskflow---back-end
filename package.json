@@ -1,0 +1,30 @@
+{
+  "name": "taskflow-api",
+  "version": "1.0.0",
+  "main": "explorar.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon server.js",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/manoelavoliveira/taskflow---back-end.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/manoelavoliveira/taskflow---back-end/issues"
+  },
+  "homepage": "https://github.com/manoelavoliveira/taskflow---back-end#readme",
+  "description": "",
+  "devDependencies": {
+    "nodemon": "^3.1.14"
+  },
+  "dependencies": {
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1"
+  }
+}
