@@ -2,50 +2,112 @@ const express = require("express");
 const app = express();
 const PORTA = 3000;
 
-const tarefas = [
+let tarefas = [
   { id: 1, texto: "Estudar Node", prioridade: "alta", coluna: "afazer" },
   { id: 2, texto: "Estudar Back-End", prioridade: "alta", coluna: "andamento" },
   { id: 3, texto: "Testar PostMan", prioridade: "media", coluna: "concluido" },
 ];
 
-app.get("/ok", (req, res) => {
-  res.json({ status: "ok", dados: [1, 2, 3] });
-});
+let usuarios = [
+  { id: 1, nome: "admin", email: "admin@gmail.com", senha: '1234'},
+  { id: 2, nome: "Ana", email: "Ana@hotmail.com", senha: 'ana567' },
+  { id: 3, nome: "João", email: "João@outlook.com", senha: 'joao890'},
+  { id: 4, nome: "Maria", email: "Maria@uol.com", senha: 'maria00 '},
+  { id: 5, nome: "Maria", email: "Maria@uol.com", senha: 'maria00 '},
+  { id: 6, nome: "Maria", email: "Maria@uol.com", senha: 'maria00 '},
+];
 
-app.get("/criado", (req, res) => {
-  res.status(201).json({ mensagem: "Criado com sucesso" });
-});
+let proximoId = 4;
+let proximoIdUsuario = 7;
 
-app.get("/erro", (req, res) => {
-  res.status(400).json({ erro: "Dados inválidos" });
-});
+app.use(express.json());
 
-app.get("/texto", (req, res) => {
-  res.send("Resposta em texto simples");
-});
 app.get("/", (req, res) => {
   res.json({ api: "TaskFlow", versao: "1.0", status: "online" });
 });
 
-// app.get("/tarefas", (req, res) => {
-//   console.log(req.headers);
-//   // console.log('baseURL:', req.host)
-//   // console.log('URL:', req.url)
-//   if (req.headers["tokenapi"] === "7819c74c-e58e-4981-8759-86ab43ca2a5d") {
-//     res.json(tarefas);
-//   } else {
-//     res.status(401).json({ erro: "Acesso negado!" });
-//   }
+// app.get("/usuarios", (req, res) => {
+//   let usuarios = [
+//     { id: 1, nome: "admin", email: "admin@gmail.com", senha: '1234'},
+//     { id: 2, nome: "Ana", email: "Ana@hotmail.com", senha: 'ana567' },
+//     { id: 3, nome: "João", email: "João@outlook.com", senha: 'joao890'},
+//     { id: 4, nome: "Maria", email: "Maria@uol.com", senha: 'maria00 '},
+//   ];
+
+//   res.json(usuarios);
 // });
-app.get("/usuarios", (req, res) => {
-  const usuarios = [
-    { id: 1, nome: "admin", email: "admin@gmail.com" },
-    { id: 2, nome: "Ana", email: "Ana@hotmail.com" },
-    { id: 3, nome: "João", email: "João@outlook.com" },
-    { id: 4, nome: "Maria", email: "Maria@uol.com" },
-  ];
-  res.json(usuarios);
+
+// ==== USUARIOS ====
+app.get("/usuarios/:id", (req, res) => {
+  const id = Number(req.params.id);
+  const usuario = usuarios.find((u) => u.id === id);
+
+  if (!usuario) {
+    return res.status(404).json({ erro: "Usuário não encontrado" });
+  }
+
+  res.json(usuario);
 });
+
+app.get("/usuarios", (req, res) => {
+  const { nome } = req.query;
+  let resultadoUsuario = usuarios;
+
+  if (nome) {
+    resultadoUsuario = resultadoUsuario.filter((u) => u.nome === nome);
+  }
+
+  res.json(resultadoUsuario);
+});
+
+app.post("/usuarios", (req, res) => {
+  const { nome, email, senha } = req.body;
+  const novoUsuario = {
+    id: proximoIdUsuario++,
+    nome: nome || "",
+    email: email || "",
+    senha: senha || "",
+  };
+  if(novoUsuario.email !== usuarios.email){
+
+    usuarios.push(novoUsuario);
+    res.status(201).json(novoUsuario);
+
+  } else {
+    res.json('Email já cadastrado!')
+
+  }
+}); //falta funcionar o desafio
+
+app.put("/usuarios/:id", (req, res) => {
+  const id = Number(req.params.id);
+  const { nome, email, senha } = req.body;
+  const indice = usuarios.findIndex((u) => u.id === id);
+
+  if (indice === -1) {
+    return res.status(404).json({ erro: "Usuário não encontrado" });
+  }
+
+  const usuarioAtualizado = { id, nome, email, senha };
+  usuarios[indice] = usuarioAtualizado;
+
+  res.json(usuarioAtualizado);
+});
+
+app.delete("/usuarios/:id", (req, res) => {
+  const id = Number(req.params.id);
+  const usuario = usuarios.find((u) => u.id === id);
+
+  if (!usuario) {
+    return res.status(404).json({ erro: "Usuário não encontrado" });
+  }
+
+  usuarios = usuarios.filter((u) => u.id !== id);
+
+  res.json({ mensagem: "Usuário removido com sucesso", id });
+});
+
+// ==== TAREFAS ====
 
 app.get("/tarefas", (req, res) => {
   const { coluna, prioridade } = req.query;
@@ -64,7 +126,6 @@ app.get("/tarefas", (req, res) => {
 
 app.get("/tarefas/:id", (req, res) => {
   const id = Number(req.params.id);
-
   const tarefa = tarefas.find((t) => t.id === id);
 
   if (!tarefa) {
@@ -72,6 +133,49 @@ app.get("/tarefas/:id", (req, res) => {
   }
 
   res.json(tarefa);
+});
+
+app.post("/tarefas", (req, res) => {
+  const { texto, prioridade, coluna, cidade } = req.body;
+  const novaTarefa = {
+    id: proximoId++,
+    texto: texto,
+    prioridade: prioridade || "media",
+    coluna: coluna || "afazer",
+    cidade: cidade || "",
+  };
+
+  tarefas.push(novaTarefa);
+
+  res.status(201).json(novaTarefa);
+});
+
+app.put("/tarefas/:id", (req, res) => {
+  const id = Number(req.params.id);
+  const { texto, prioridade, coluna, cidade } = req.body;
+  const indice = tarefas.findIndex((t) => t.id === id);
+
+  if (indice === -1) {
+    return res.status(404).json({ erro: "Tarefa não encontrada" });
+  }
+
+  const tarefaAtualizada = { id, texto, prioridade, coluna, cidade };
+  tarefas[indice] = tarefaAtualizada;
+
+  res.json(tarefaAtualizada);
+});
+
+app.delete("/tarefas/:id", (req, res) => {
+  const id = Number(req.params.id);
+  const tarefa = tarefas.find((t) => t.id === id);
+
+  if (!tarefa) {
+    return res.status(404).json({ erro: "Tarefa não encontrada" });
+  }
+
+  tarefas = tarefas.filter((t) => t.id !== id);
+
+  res.json({ mensagem: "Tarefa removida com sucesso", id });
 });
 
 app.use((req, res) => {
@@ -83,5 +187,33 @@ app.use((req, res) => {
 });
 
 app.listen(PORTA, () => {
-  console.log(`Porta ${PORTA}`);
+  console.log("Servidor rodando em http://localhost:3000");
 });
+
+// app.get("/tarefas", (req, res) => {
+//   console.log(req.headers);
+//   // console.log('baseURL:', req.host)
+//   // console.log('URL:', req.url)
+//   if (req.headers["tokenapi"] === "7819c74c-e58e-4981-8759-86ab43ca2a5d") {
+//     res.json(tarefas);
+//   } else {
+//     res.status(401).json({ erro: "Acesso negado!" });
+//   }
+// });
+//
+
+// app.get("/ok", (req, res) => {
+//   res.json({ status: "ok", dados: [1, 2, 3] });
+// });
+
+// app.get("/criado", (req, res) => {
+//   res.status(201).json({ mensagem: "Criado com sucesso" });
+// });
+
+// app.get("/erro", (req, res) => {
+//   res.status(400).json({ erro: "Dados inválidos" });
+// });
+
+// app.get("/texto", (req, res) => {
+//   res.send("Resposta em texto simples");
+// });
