@@ -9,12 +9,12 @@ let tarefas = [
 ];
 
 let usuarios = [
-  { id: 1, nome: "admin", email: "admin@gmail.com", senha: '1234'},
-  { id: 2, nome: "Ana", email: "Ana@hotmail.com", senha: 'ana567' },
-  { id: 3, nome: "João", email: "João@outlook.com", senha: 'joao890'},
-  { id: 4, nome: "Maria", email: "Maria@uol.com", senha: 'maria00 '},
-  { id: 5, nome: "Maria", email: "Maria@uol.com", senha: 'maria00 '},
-  { id: 6, nome: "Maria", email: "Maria@uol.com", senha: 'maria00 '},
+  { id: 1, nome: "admin", email: "admin@gmail.com", senha: "1234" },
+  { id: 2, nome: "Ana", email: "Ana@hotmail.com", senha: "ana567" },
+  { id: 3, nome: "João", email: "João@outlook.com", senha: "joao890" },
+  { id: 4, nome: "Maria", email: "Maria@uol.com", senha: "maria00 " },
+  { id: 5, nome: "Maria", email: "Maria@uol.com", senha: "maria00 " },
+  { id: 6, nome: "Maria", email: "Maria@uol.com", senha: "maria00 " },
 ];
 
 let proximoId = 4;
@@ -26,16 +26,37 @@ app.get("/", (req, res) => {
   res.json({ api: "TaskFlow", versao: "1.0", status: "online" });
 });
 
-// app.get("/usuarios", (req, res) => {
-//   let usuarios = [
-//     { id: 1, nome: "admin", email: "admin@gmail.com", senha: '1234'},
-//     { id: 2, nome: "Ana", email: "Ana@hotmail.com", senha: 'ana567' },
-//     { id: 3, nome: "João", email: "João@outlook.com", senha: 'joao890'},
-//     { id: 4, nome: "Maria", email: "Maria@uol.com", senha: 'maria00 '},
-//   ];
+// ==== ESTATÍSTICAS ====
+app.get("/estatisticas", (req, res) => {
+  const coluna = req.query;
+  let resultado = tarefas;
+  const totalTarefas = tarefas.length;
 
-//   res.json(usuarios);
-// });
+  if(coluna){
+    resultado = tarefas.filter(t => t.coluna === coluna);
+  }
+
+  const porColuna = {
+    afazer: resultado.filter(t => t.coluna === 'afazer').length,
+    andamento: resultado.filter(t => t.coluna === 'andamento').length,
+    concluido: resultado.filter(t => t.coluna === 'concluido')
+  }
+
+  const porPrioridade = {
+    alta: resultado.filter(t => t.prioridade === 'alta').length,
+    media: resultado.filter(t => t.prioridade === 'media').length,
+    baixa: resultado.filter(t => t.prioridade === 'baixa').length
+  }
+
+  const colunaComMaisTarefas = Object.entries(porColuna).sort((a, b) => b[1])[0][0];
+  
+  res.json({
+    totalTarefas,
+    porColuna,
+    porPrioridade,
+    'Mais tarefas': colunaComMaisTarefas
+  })
+})
 
 // ==== USUARIOS ====
 app.get("/usuarios/:id", (req, res) => {
@@ -62,28 +83,33 @@ app.get("/usuarios", (req, res) => {
 
 app.post("/usuarios", (req, res) => {
   const { nome, email, senha } = req.body;
+  const emailExiste = usuarios.find((u) => u.email === email);
+
+  if (emailExiste) {
+    return res.status(400).json({
+      erro: "Este email já está cadastrado",
+    });
+  }
   const novoUsuario = {
     id: proximoIdUsuario++,
     nome: nome || "",
     email: email || "",
     senha: senha || "",
   };
-  if(novoUsuario.email !== usuarios.email){
 
-    usuarios.push(novoUsuario);
-    res.status(201).json(novoUsuario);
-
-  } else {
-    res.json('Email já cadastrado!')
-
-  }
-}); //falta funcionar o desafio
+  usuarios.push(novoUsuario);
+  res.status(201).json(novoUsuario);
+});
 
 app.put("/usuarios/:id", (req, res) => {
   const id = Number(req.params.id);
   const { nome, email, senha } = req.body;
   const indice = usuarios.findIndex((u) => u.id === id);
+  const emailExiste = usuarios.find((u) => u.email === req.body.email && u.id !== id);
 
+  if (emailExiste) {
+    return res.status(400).json({ erro: "Este email já está cadastrado" });
+  }
   if (indice === -1) {
     return res.status(404).json({ erro: "Usuário não encontrado" });
   }
