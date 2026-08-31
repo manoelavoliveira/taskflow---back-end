@@ -1,6 +1,7 @@
 const express = require("express");
 const app = express();
 const PORTA = 3000;
+const tarefasRoutes = require ('./src/routes/tarefas.routes');
 
 let tarefas = [
   { id: 1, texto: "Estudar Node", prioridade: "alta", coluna: "afazer" },
@@ -134,87 +135,91 @@ app.delete("/usuarios/:id", (req, res) => {
 });
 
 // ==== TAREFAS ====
+app.use('/tarefas', tarefasRoutes);
+// app.get("/tarefas", (req, res) => {
+//   const { coluna, prioridade } = req.query;
+//   let resultado = tarefas;
 
-app.get("/tarefas", (req, res) => {
-  const { coluna, prioridade } = req.query;
-  let resultado = tarefas;
+//   if (coluna) {
+//     resultado = resultado.filter((t) => t.coluna === coluna);
+//   }
 
-  if (coluna) {
-    resultado = resultado.filter((t) => t.coluna === coluna);
-  }
+//   if (prioridade) {
+//     resultado = resultado.filter((t) => t.prioridade === prioridade);
+//   }
 
-  if (prioridade) {
-    resultado = resultado.filter((t) => t.prioridade === prioridade);
-  }
+//   res.json(resultado);
+// });
 
-  res.json(resultado);
-});
+// app.get("/tarefas/:id", (req, res) => {
+//   const id = Number(req.params.id);
+//   const tarefa = tarefas.find((t) => t.id === id);
 
-app.get("/tarefas/:id", (req, res) => {
-  const id = Number(req.params.id);
-  const tarefa = tarefas.find((t) => t.id === id);
+//   if (!tarefa) {
+//     return res.status(404).json({ erro: "Tarefa não encontrada" });
+//   }
 
-  if (!tarefa) {
-    return res.status(404).json({ erro: "Tarefa não encontrada" });
-  }
+//   res.json(tarefa);
+// });
 
-  res.json(tarefa);
-});
+// app.post("/tarefas", (req, res) => {
+//   const { texto, prioridade, coluna, cidade } = req.body;
+//   const novaTarefa = {
+//     id: proximoId++,
+//     texto: texto,
+//     prioridade: prioridade || "media",
+//     coluna: coluna || "afazer",
+//     cidade: cidade || "",
+//   };
 
-app.post("/tarefas", (req, res) => {
-  const { texto, prioridade, coluna, cidade } = req.body;
-  const novaTarefa = {
-    id: proximoId++,
-    texto: texto,
-    prioridade: prioridade || "media",
-    coluna: coluna || "afazer",
-    cidade: cidade || "",
-  };
+//   tarefas.push(novaTarefa);
 
-  tarefas.push(novaTarefa);
+//   res.status(201).json(novaTarefa);
+// });
 
-  res.status(201).json(novaTarefa);
-});
+// app.put("/tarefas/:id", (req, res) => {
+//   const id = Number(req.params.id);
+//   const { texto, prioridade, coluna, cidade } = req.body;
+//   const indice = tarefas.findIndex((t) => t.id === id);
 
-app.put("/tarefas/:id", (req, res) => {
-  const id = Number(req.params.id);
-  const { texto, prioridade, coluna, cidade } = req.body;
-  const indice = tarefas.findIndex((t) => t.id === id);
+//   if (indice === -1) {
+//     return res.status(404).json({ erro: "Tarefa não encontrada" });
+//   }
 
-  if (indice === -1) {
-    return res.status(404).json({ erro: "Tarefa não encontrada" });
-  }
+//   const tarefaAtualizada = { id, texto, prioridade, coluna, cidade };
+//   tarefas[indice] = tarefaAtualizada;
 
-  const tarefaAtualizada = { id, texto, prioridade, coluna, cidade };
-  tarefas[indice] = tarefaAtualizada;
+//   res.json(tarefaAtualizada);
+// });
 
-  res.json(tarefaAtualizada);
-});
+// app.delete("/tarefas/:id", (req, res) => {
+//   const id = Number(req.params.id);
+//   const tarefa = tarefas.find((t) => t.id === id);
 
-app.delete("/tarefas/:id", (req, res) => {
-  const id = Number(req.params.id);
-  const tarefa = tarefas.find((t) => t.id === id);
+//   if (!tarefa) {
+//     return res.status(404).json({ erro: "Tarefa não encontrada" });
+//   }
 
-  if (!tarefa) {
-    return res.status(404).json({ erro: "Tarefa não encontrada" });
-  }
+//   tarefas = tarefas.filter((t) => t.id !== id);
 
-  tarefas = tarefas.filter((t) => t.id !== id);
+//   res.json({ mensagem: "Tarefa removida com sucesso", id });
+// });
 
-  res.json({ mensagem: "Tarefa removida com sucesso", id });
-});
+// app.use((req, res) => {
+//   res.status(404).json({
+//     erro: "Rota não encontrada",
+//     metodo: req.method,
+//     caminho: req.url,
+//   });
+// });
 
-app.use((req, res) => {
-  res.status(404).json({
-    erro: "Rota não encontrada",
-    metodo: req.method,
-    caminho: req.url,
-  });
-});
+// app.listen(PORTA, () => {
+//   console.log("Servidor rodando em http://localhost:3000");
+// });
+// ==============
 
-app.listen(PORTA, () => {
-  console.log("Servidor rodando em http://localhost:3000");
-});
+
+
 
 // app.get("/tarefas", (req, res) => {
 //   console.log(req.headers);
