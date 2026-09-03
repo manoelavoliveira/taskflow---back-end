@@ -4,7 +4,7 @@ let projetos = [
   { id: 3, nome: 'Projeto 3', descricao: 'Descrição 3', ativo: false}
 ];
 const ativo = true;
-let proximoIdProjeto = 2;
+let proximoIdProjeto = 4;
 
 const projetosController = {
   listarProjeto(req, res) {

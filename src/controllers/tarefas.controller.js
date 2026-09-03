@@ -1,9 +1,4 @@
-let tarefas = [
-  { id: 1, texto: "Estudar Node", prioridade: "alta", coluna: "afazer" },
-  { id: 2, texto: "Estudar Back-End", prioridade: "alta", coluna: "andamento" },
-  { id: 3, texto: "Testar PostMan", prioridade: "media", coluna: "concluido" },
-];
-let proximoId = 4;
+const tarefaModel = require("../models/tarefa.model");
 
 const tarefasController = {
   estatisticas(req, res) {
@@ -48,22 +43,15 @@ const tarefasController = {
   },
 
   listar(req, res) {
-    const { coluna, prioridade } = req.query;
-    let resultado = tarefas;
-
-    if (coluna) {
-      resultado = resultado.filter((t) => t.coluna === coluna);
-    }
-    if (prioridade) {
-      resultado = resultado.filter((t) => t.prioridade === prioridade);
-    }
-
+    const { coluna } = req.query;
+    let resultado = coluna
+      ? tarefaModel.listarPorColuna(coluna)
+      : tarefaModel.listar();
     res.json(resultado);
   },
 
   buscarPorId(req, res) {
-    const id = parseInt(req.params.id);
-    const tarefa = tarefas.find((t) => t.id === id);
+    const tarefa = tarefaModel.buscar(parseInt(req.params.id));
 
     if (!tarefa) {
       return res.status(404).json({ erro: "Tarefa não encontrada" });
@@ -73,45 +61,28 @@ const tarefasController = {
   },
 
   criar(req, res) {
-    const { texto, prioridade, coluna, cidade } = req.body;
+    const { texto } = req.body;
     if (!texto) return res.status(400).json({ erro: "Texto obrigatório!" });
 
-    const novaTarefa = {
-      id: proximoId++,
-      texto: texto,
-      prioridade: prioridade || "media",
-      coluna: coluna || "afazer",
-      cidade: cidade || "",
-    };
-    tarefas.push(novaTarefa);
-
-    res.status(201).json(novaTarefa);
+    res.status(201).json(tarefaModel.adicionar(req.body));
   },
 
   atualizar(req, res) {
-    const id = parseInt(req.params.id);
+    const atualizada = tarefaModel.atualizar(parseInt(req.params.id), req.body);
 
-    const indice = tarefas.findIndex((t) => t.id === id);
-
-    if (indice === -1)
+    if (!atualizada)
       return res.status(404).json({ erro: "Tarefa não encontrada" });
 
-    tarefas[indice] = { ...tarefas[indice], ...req.body, id };
-
-    res.json(tarefas[indice]);
+    res.json(atualizada);
   },
 
   remover(req, res) {
-    const id = parseInt(req.params.id);
-    const indice = tarefas.findIndex((t) => t.id === id);
-
-    if (indice === -1)
+    const removida = tarefaModel.remover(parseInt(req.params.id));
+    if (!removida)
       return res.status(404).json({ erro: "Tarefa não encontrada" });
 
-    const removida = tarefas.splice(indice, 1)[0];
-    res.json({ mensagem: "Tarefa removida com sucesso", id });
+    res.json({ mensagem: "Tarefa removida com sucesso", tarefa: removida});
   },
-
 };
 
 module.exports = tarefasController;
