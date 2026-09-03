@@ -4,9 +4,9 @@ const usuariosController = require("../controllers/usuarios.controller");
 
 router.get("/", usuariosController.listar);
 
-router.get("/:id", usuariosController.buscarPorId)
-
 router.post("/", usuariosController.criar)
+
+router.get("/:id", usuariosController.buscarPorId)
 
 router.put("/:id", usuariosController.atualizar);
 
