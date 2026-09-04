@@ -6,7 +6,6 @@ let tarefas = [
 let proximoId = 4;
 
 module.exports = {
-  
   listar: () => tarefas,
 
   listarPorColuna: (coluna) => tarefas.filter((t) => t.coluna === coluna),
@@ -16,7 +15,7 @@ module.exports = {
   adicionar: ({ texto, prioridade, coluna }) => {
     const novaTarefa = {
       id: proximoId++,
-      texto,
+      texto: texto,
       prioridade: prioridade || "media",
       coluna: coluna || "afazer",
     };
@@ -36,21 +35,23 @@ module.exports = {
     if (idx === -1) return null;
     return tarefas.splice(idx, 1)[0];
   },
-  
+
   estatisticas: () => {
-    const porColuna {
-    afazer: base.filter((t) => t.coluna === "afazer").length,
-      andamento: base.filter((t) => t.coluna === "andamento").length,
-      concluido: base.filter((t) => t.coluna === "concluido").length,
-    }
+    const total = tarefas.length;
+
+    const porColuna = {
+      afazer: tarefas.filter((t) => t.coluna === "afazer").length,
+      andamento: tarefas.filter((t) => t.coluna === "andamento").length,
+      concluido: tarefas.filter((t) => t.coluna === "concluido").length,
+    };
 
     const porPrioridade = {
-      alta: base.filter((t) => t.prioridade === "alta").length,
-      media: base.filter((t) => t.prioridade === "media").length,
-      baixa: base.filter((t) => t.prioridade === "baixa").length,
-    }
+      alta: tarefas.filter((t) => t.prioridade === "alta").length,
+      media: tarefas.filter((t) => t.prioridade === "media").length,
+      baixa: tarefas.filter((t) => t.prioridade === "baixa").length,
+    };
 
-    res.json({ coluna: coluna || "todas", total, porColuna, porPrioridade })
+    return ({ total, porColuna, porPrioridade });
   },
 
   resumo: () => {
@@ -71,6 +72,6 @@ module.exports = {
     )[0][0];
     const resumo = `Você tem ${total} tarefa(s): ${concluido} concluídas, ${andamento} em andamento e ${afazer} a fazer. Prioridade mais comum: ${prioridadeComum}`;
 
-    res.json(resumo);
+    return (resumo);
   },
-
+};

@@ -4,7 +4,7 @@ const tarefasController = require("../controllers/tarefas.controller");
 
 router.get("/estatisticas", tarefasController.estatisticas);
 
-router.get("/estatisticas/resumo", tarefasController.estatisticasResumo);
+router.get("/estatisticas/resumo", tarefasController.resumo);
 
 router.get("/", tarefasController.listar);
 

@@ -1,43 +1,15 @@
 const tarefaModel = require("../models/tarefa.model");
 
 const tarefasController = {
+
   estatisticas(req, res) {
-    const { coluna } = req.query;
-    const base = coluna ? tarefas.filter((t) => t.coluna === coluna) : tarefas;
-    const total = base.length;
+    const estatisticas = tarefaModel.estatisticas();
 
-    const porColuna = {
-      afazer: base.filter((t) => t.coluna === "afazer").length,
-      andamento: base.filter((t) => t.coluna === "andamento").length,
-      concluido: base.filter((t) => t.coluna === "concluido").length,
-    };
-
-    const porPrioridade = {
-      alta: base.filter((t) => t.prioridade === "alta").length,
-      media: base.filter((t) => t.prioridade === "media").length,
-      baixa: base.filter((t) => t.prioridade === "baixa").length,
-    };
-
-    res.json({ coluna: coluna || "todas", total, porColuna, porPrioridade });
+    res.json(estatisticas);
   },
 
-  estatisticasResumo(req, res) {
-    const total = tarefas.length;
-
-    const afazer = tarefas.filter((t) => t.coluna === "afazer").length;
-    const andamento = tarefas.filter((t) => t.coluna === "andamento").length;
-    const concluido = tarefas.filter((t) => t.coluna === "concluido").length;
-
-    const prioridades = {
-      baixa: tarefas.filter((t) => t.prioridade === "baixa").length,
-      media: tarefas.filter((t) => t.prioridade === "media").length,
-      alta: tarefas.filter((t) => t.prioridade === "alta").length,
-    };
-
-    const prioridadeComum = Object.entries(prioridades).sort(
-      (a, b) => b[1] - a[1],
-    )[0][0];
-    const resumo = `Você tem ${total} tarefa(s): ${concluido} concluídas, ${andamento} em andamento e ${afazer} a fazer. Prioridade mais comum: ${prioridadeComum}`;
+  resumo(req, res) {
+    const resumo = tarefaModel.resumo();
 
     res.json(resumo);
   },
@@ -47,6 +19,7 @@ const tarefasController = {
     let resultado = coluna
       ? tarefaModel.listarPorColuna(coluna)
       : tarefaModel.listar();
+
     res.json(resultado);
   },
 
@@ -81,7 +54,7 @@ const tarefasController = {
     if (!removida)
       return res.status(404).json({ erro: "Tarefa não encontrada" });
 
-    res.json({ mensagem: "Tarefa removida com sucesso", tarefa: removida});
+    res.json({ mensagem: "Tarefa removida com sucesso", tarefa: removida });
   },
 };
 

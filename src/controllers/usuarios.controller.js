@@ -1,26 +1,17 @@
-let usuarios = [
-  { id: 1, nome: "admin", email: "admin@gmail.com", senha: "1234" },
-  { id: 2, nome: "Ana", email: "Ana@hotmail.com", senha: "ana567" },
-  { id: 3, nome: "João", email: "João@outlook.com", senha: "joao890" },
-  { id: 4, nome: "Maria", email: "Maria@uol.com", senha: "maria00 " },
-];
-let proximoIdUsuario = 5;
+const usuarioModel = require("../models/usuario.model");
 
 const usuariosController = {
   listar(req, res) {
     const { nome } = req.query;
-    let resultado = usuarios;
-
-    if (nome) {
-      resultado = resultado.filter((u) => u.nome === nome);
-    }
+    let resultado = nome
+      ? usuarioModel.listarPorNome(nome)
+      : usuarioModel.listar();
 
     res.json(resultado);
   },
 
   buscarPorId(req, res) {
-    const id = parseInt(req.params.id);
-    const usuario = usuarios.find((u) => u.id === id);
+    const usuario = usuarioModel.buscar(parseInt(req.params.id));
 
     if (!usuario) {
       return res.status(404).json({ erro: "Usuário não encontrado" });
@@ -31,57 +22,47 @@ const usuariosController = {
 
   criar(req, res) {
     const { nome, email, senha } = req.body;
-    const emailExiste = usuarios.find((u) => u.email === email);
-
-    if (!nome || !email)
-      return res.status(400).json({ erro: "Nome e email obrigatórios!" });
+    if (!nome || !email || !senha) {
+      return res
+        .status(400)
+        .json({ erro: "Nome, email e senha são obrigatorios" });
+    }
+    const emailExiste = usuarioModel
+      .listar()
+      .find((u) => u.email === email);
 
     if (emailExiste) {
-      return res.status(400).json({
-        erro: "Este email já está cadastrado",
-      });
+      return res.status(400).json({ erro: "Este email já existe!" });
     }
-    const novoUsuario = {
-      id: proximoIdUsuario++,
-      nome: nome || "",
-      email: email || "",
-      senha: senha || "",
-    };
-
-    usuarios.push(novoUsuario);
-    res.status(201).json(novoUsuario);
+    res.status(201).json(usuarioModel.adicionar(req.body));
   },
 
-  atualizar(req, res) {
-    const id = parseInt(req.params.id);
-    const { nome, email, senha } = req.body;
-    const indice = usuarios.findIndex((u) => u.id === id);
-    const emailExiste = usuarios.find(
-      (u) => u.email === req.body.email && u.id !== id,
-    );
+  // atualizar(req, res) {
+  //   const atualizado = usuarioModel.atualizar(
+  //     parseInt(req.params.id),
+  //     req.body,
+  //   );
 
-    if (emailExiste) {
-      return res.status(400).json({ erro: "Este email já está cadastrado" });
-    }
-    if (indice === -1) {
-      return res.status(404).json({ erro: "Usuário não encontrado" });
-    }
-
-    const usuarioAtualizado = { id, nome, email, senha };
-    usuarios[indice] = usuarioAtualizado;
-
-    res.json(usuarioAtualizado);
-  },
+  //   if (!atualizado) {
+  //     return res.status(404).json({ erro: "Usuário não encontrado" });
+  //   }
+  //   const emailExiste = usuarioModel
+  //     .listar()
+  //     .find((u) => u.email === req.body.email);
+  //   if (emailExiste) {
+  //     return res.status(400).json({ erro: "Esse email já está cadastrado" });
+  //   }
+  //   res.json(atualizado);
+  // },
 
   remover(req, res) {
     const id = parseInt(req.params.id);
-    const indice = usuarios.findIndex((u) => u.id === id);
+    const removido = usuarioModel.remover(parseInt(req.params.id));
 
-    if (indice === -1)
-      return res.status(404).json({ erro: "Tarefa não encontrada" });
+    if (!removido)
+      return res.status(404).json({ erro: "Usuário não encontrado" });
 
-    const removido = usuarios.splice(indice, 1)[0];
-    res.json({ mensagem: "Usuário removido com sucesso", id});
+    res.json({ mensagem: "Usuário removido com sucesso", usuario: removido });
   },
 };
 

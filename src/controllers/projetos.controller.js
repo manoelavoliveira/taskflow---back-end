@@ -1,70 +1,58 @@
-let projetos = [
-  { id: 1, nome: 'Projeto 1', descricao: 'Descrição 1', ativo: true},
-  { id: 2, nome: 'Projeto 2', descricao: 'Descrição 2', ativo: true},
-  { id: 3, nome: 'Projeto 3', descricao: 'Descrição 3', ativo: false}
-];
-const ativo = true;
-let proximoIdProjeto = 4;
+const projetoModel = require("../models/projeto.model");
 
 const projetosController = {
-  listarProjeto(req, res) {
+  listar(req, res) {
     const { nome, ativo } = req.query;
-    let resultado = projetos;
+    let resultado = projetoModel.listar();
 
-    if (nome) {
-      resultado = resultado.filter((p) => p.nome === nome);
-    };
-    if(ativo) {
-      resultado = resultado.filter((p) => p.ativo === ativo);
-    }
+    // if (nome) {
+    //   resultado = resultado.filter((p) => p.nome === nome);
+    // };
+    // if(ativo) {
+    //   resultado = resultado.filter((p) => p.ativo === ativo);
+    // }
     res.json(resultado);
   },
 
   buscarPorId(req, res) {
-    const id = parseInt(req.params.id);
-    const projeto = projetos.find((p) => p.id === id);
+    const projeto = projetoModel.buscar(parseInt(req.params.id));
 
     if (!projeto) return res.status(400).json({ erro: "Projeto não existe." });
 
     res.json(projeto);
   },
 
-  criarProjeto(req, res) {
+  criar(req, res) {
     const { nome, descricao, ativo } = req.body;
 
     if (!nome)
       return res.status(400).json({ erro: "O nome do projeto é obrigatório!" });
-    const novoProjeto = {
-      id: proximoIdProjeto++,
-      nome: nome,
-      descricao: descricao,
-      ativo: ativo,
-    };
-    projetos.push(novoProjeto);
+    // const novoProjeto = {
+    //   id: proximoIdProjeto++,
+    //   nome: nome,
+    //   descricao: descricao,
+    //   ativo: ativo
+    // };
+    // projetos.push(novoProjeto);
 
-    res.json(novoProjeto);
+    res.json(projetoModel.adicionar(req.body));
   },
 
-  editarProjeto(req, res) {
-    const id = parseInt(req.params.id);
-    const indice = projetos.findIndex((p) => p.id === id);
-
-    if (indice === -1)
+  atualizar(req, res) {
+    const atualizado = projetoModel.atualizar(parseInt(req.params.id));
+    if (!atualizado)
       return res.status(404).json({ erro: "Projeto não encontrado" });
 
-    projetos[indice] = { ...projetos[indice], ...req.body, id };
-
-    res.json(projetos[indice]);
+    res.json(atualizado);
   },
 
-  deletarProjeto(req, res) {
-    const id = parseInt(req.params.id);
-    const indice = projetos.findIndex((p) => p.id === id);
+  remover(req, res) {
+    const removido = projetoModel.remover(parseInt(req.params.id));
 
-    if (indice === -1)
+    if (!removido)
       return res.status(404).json({ erro: "Projeto não encontrado" });
-    const removido = projetos.splice(indice, 1)[0];
-    res.json({ mensagem: "Projeto removido com sucesso" });
+
+    res.json({ mensagem: "Projeto removido com sucesso", projeto: removido });
   },
 };
 
