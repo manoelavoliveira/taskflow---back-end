@@ -29,9 +29,9 @@ module.exports = {
     return projetos[idx];
   },
 
-  remover: (id, dados) => {
+  remover: (id) => {
     const idx = projetos.findIndex(p => p.id === id);
     if (idx === -1) return null;
-    return projetos.splice(idx, 1)
+    return projetos.splice(idx, 1)[0];
   }
 };

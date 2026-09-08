@@ -4,19 +4,20 @@ const PORTA = 3000;
 const tarefasRoutes = require ('./src/routes/tarefas.routes');
 const usuariosRoutes = require ('./src/routes/usuarios.routes.js')
 const projetosRoutes = require ('./src/routes/projetos.routes.js');
+const validarContentType = require('./src/middlewares/validarContentType');
+const logger = require ('./src/middlewares/logger');
 
 app.use(express.json());
+app.use(validarContentType);
+app.use(logger);
 
 app.get("/", (req, res) => {
   res.json({ api: "TaskFlow", versao: "1.0", status: "online" });
 });
 
-// ==== USUARIOS ====
+
 app.use('/usuarios', usuariosRoutes)
-
-// ==== TAREFAS ====
 app.use('/tarefas', tarefasRoutes);
-
 app.use('/projetos', projetosRoutes);
 
 app.use((req, res) => {

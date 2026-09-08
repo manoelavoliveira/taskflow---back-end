@@ -1,13 +1,30 @@
 const tarefaModel = require("../models/tarefa.model");
 const usuarioModel = require("../models/usuario.model");
 
+const PRIORIDADES_VALIDAS = ["alta", "media", "baixa"];
+const COLUNAS_VALIDAS = ["afazer", "andamento", "concluido"];
+
 const tarefasController = {
-
   estatisticas(req, res) {
-
     const estatisticas = tarefaModel.estatisticas();
+    // const contagemPorUsuario = todasTarefas.reduce((acumulador, tarefa) => {
+    //   const id = tarefa.usuarioId;
+    //   acumulador[id] = (acumulador[id] || 0) + 1;
+    //   return acumulador;
+    // }, {});
+    // const rankingUsuarios = Object.entries(contagemPorUsuario)
+    //   .map(([usuarioId, totalTarefas]) => {
+    //     const usuario = usuariosModal.buscarUsuarioPorId(parseInt(usuarioId));
+    //     return {
+    //       usuarioId: parseInt(usuarioId),
+    //       nome: usuario ? usuario.nome : "Desconhecido",
+    //       totalTarefas,
+    //     };
+    //   })
+    //   .sort((a, b) => b.totalTarefas - a.totalTarefas);
 
-    res.json(estatisticas);
+    // res.json({ estatisticas, rankingUsuarios });
+    res.json({estatisticas})
   },
 
   resumo(req, res) {
@@ -18,18 +35,11 @@ const tarefasController = {
 
   listar(req, res) {
     const { idUsuario, coluna } = req.query;
-    let tarefas = tarefaModel.listar();
     let resultado = coluna
       ? tarefaModel.listarPorColuna(coluna)
       : tarefaModel.listar();
 
-    if (idUsuario !== undefined) 
-      tarefas = tarefas.filter((t) => t.idUsuario === parseInt(idUsuario));
-    
-    if (coluna !== undefined) 
-      tarefas = tarefas.filter((t) => t.coluna === coluna);
-
-      res.json(resultado);
+    res.json(resultado);
   },
 
   buscarPorId(req, res) {
@@ -43,17 +53,18 @@ const tarefasController = {
   },
 
   criar(req, res) {
-
-    const prioridadesValidas = ["alta", "media", "baixa"];
-    const colunasValidas = ["afazer", "andamento", "concluido"];
     const { texto, prioridade, coluna, idUsuario } = req.body;
 
-    if (prioridade !== undefined && !prioridadesValidas.includes(prioridade)) {
-      return res.status(400).json({ erro: "Prioridade inválida. Use 'alta', 'media' ou 'baixa'." });
-    }
-    if (coluna !== undefined && !colunasValidas.includes(coluna)) {
-      return res.status(400).json({ erro: "Coluna inválida. Use 'afazer', 'andamento' ou 'concluido'." });
-    }
+    if (prioridade && !PRIORIDADES_VALIDAS.includes(prioridade))
+      return res
+        .status(400)
+        .json({ erro: "Prioridade inválida. Use: alta, media ou baixa" });
+
+    if (coluna && !COLUNAS_VALIDAS.includes(coluna))
+      return res
+        .status(400)
+        .json({ erro: "Coluna inválida. Use: afazer, andamento ou concluido" });
+
     if (!texto) return res.status(400).json({ erro: "Texto obrigatório!" });
 
     if (idUsuario !== undefined) {
@@ -62,48 +73,38 @@ const tarefasController = {
         return res.status(400).json({ erro: "Usuário não encontrado" });
       }
     }
-    if (
-      coluna === "andamento" && idUsuario !== undefined
-    ) {
-      const tarefasAndamento = tarefaModel.listar().filter(t => t.idUsuario === parseInt(idUsuario) && t.coluna === "andamento");
-      if (tarefasAndamento.length >= 2) {
-        return res.status(400).json({ erro: "Não é possível ter mais de 2 tarefas em andamento para o mesmo usuário." });
-      }
+     if (coluna === 'andamento' &&
+          tarefaModel.contarEmAndamentoPorUsuario(parseInt(usuarioId)) >= 2)
+        return res.status(400).json({
+          erro: 'Limite de 2 tarefas em andamento por usuário atingido',
+        });
+    
       res.status(201).json(tarefaModel.adicionar(req.body));
-    }
   },
 
-  atualizar(req, res) {    
-    const {coluna, prioridade} = req.body;
-    const prioridadesValidas = ["alta", "media", "baixa"];
-    const colunasValidas = ["afazer", "andamento", "concluido"];
+  atualizar(req, res) {
+    const { coluna, prioridade, idUsuario } = req.body;
     const atualizada = tarefaModel.atualizar(parseInt(req.params.id), req.body);
     const tarefa = tarefaModel.buscar(parseInt(req.params.id));
 
-    if (prioridade !== undefined && !prioridadesValidas.includes(prioridade)) 
-      return res.status(400).json({ erro: "Prioridade inválida. Use 'alta', 'media' ou 'baixa'." });
-    
-    if (coluna !== undefined && !colunasValidas.includes(coluna)) 
-      return res.status(400).json({ erro: "Coluna inválida. Use 'afazer', 'andamento' ou 'concluido'." });
-        
-    if (req.body.coluna !== undefined) {
+    if (prioridade && !PRIORIDADES_VALIDAS.includes(prioridade))
+      return res
+        .status(400)
+        .json({ erro: "Prioridade inválida. Use: alta, media ou baixa" });
 
-      if (
-        tarefa.coluna !== "concluido" &&
-        req.body.coluna === "concluido"
-      ) {
-        req.body.concluidaEm = new Date().toISOString();
-      }
+    if (coluna && !COLUNAS_VALIDAS.includes(coluna))
+      return res
+        .status(400)
+        .json({ erro: "Coluna inválida. Use: afazer, andamento ou concluido" });
 
-      if (
-        tarefa.coluna === "concluido" &&
-        req.body.coluna !== "concluido"
-      ) {
-        req.body.concluidaEm = null;
-      }
+    if (coluna === 'andamento' && usuarioId) {
+      // excluirId = id atual para não contar a própria tarefa
+      if (tarefaModel.contarEmAndamentoPorUsuario(parseInt(usuarioId), id) >= 2)
+        return res.status(400).json({
+          erro: 'Limite de 2 tarefas em andamento por usuário atingido',
+        });
     }
-    if (!tarefa)
-      return res.status(404).json({ erro: "Tarefa não encontrada" });
+
     if (!atualizada)
       return res.status(404).json({ erro: "Tarefa não encontrada" });
 

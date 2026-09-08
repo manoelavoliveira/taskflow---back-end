@@ -62,9 +62,10 @@ const usuariosController = {
     const tarefasUsuario = tarefaModel.listar().filter((t) => t.idUsuario === id);
     const removido = usuarioModel.remover(parseInt(req.params.id));
 
-    if (tarefasUsuario.length > 0) {
-      return res.status(400).json({ erro: "Esse usuário possui tarefas. Delete as tarefas antes de remover o usuário." });
-    }
+    if (tarefaModel.contarPorUsuario(id) > 0)
+      return res.status(400).json({
+        erro: 'Usuário possui tarefas. Remova as tarefas antes de deletar o usuário.',
+      });
     if (!removido)
       return res.status(404).json({ erro: "Usuário não encontrado" });
 
