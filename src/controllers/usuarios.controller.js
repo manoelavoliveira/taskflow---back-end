@@ -1,3 +1,4 @@
+const tarefaModel = require("../models/tarefa.model");
 const usuarioModel = require("../models/usuario.model");
 
 const usuariosController = {
@@ -37,28 +38,33 @@ const usuariosController = {
     res.status(201).json(usuarioModel.adicionar(req.body));
   },
 
-  // atualizar(req, res) {
-  //   const atualizado = usuarioModel.atualizar(
-  //     parseInt(req.params.id),
-  //     req.body,
-  //   );
+  atualizar(req, res) {
+    const emailExiste = usuarioModel
+      .listar()
+      .find((u) => u.email === req.body.email);
+    if (emailExiste) {
+      return res.status(400).json({ erro: "Esse email já está cadastrado" });
+    }
+    const atualizado = usuarioModel.atualizar(
+      parseInt(req.params.id),
+      req.body
+    );
 
-  //   if (!atualizado) {
-  //     return res.status(404).json({ erro: "Usuário não encontrado" });
-  //   }
-  //   const emailExiste = usuarioModel
-  //     .listar()
-  //     .find((u) => u.email === req.body.email);
-  //   if (emailExiste) {
-  //     return res.status(400).json({ erro: "Esse email já está cadastrado" });
-  //   }
-  //   res.json(atualizado);
-  // },
+    if (!atualizado) {
+      return res.status(404).json({ erro: "Usuário não encontrado" });
+    }
+    
+    res.json(atualizado);
+  },
 
   remover(req, res) {
-    const id = parseInt(req.params.id);
+    const id = parseInt(req.params.id);    
+    const tarefasUsuario = tarefaModel.listar().filter((t) => t.idUsuario === id);
     const removido = usuarioModel.remover(parseInt(req.params.id));
 
+    if (tarefasUsuario.length > 0) {
+      return res.status(400).json({ erro: "Esse usuário possui tarefas. Delete as tarefas antes de remover o usuário." });
+    }
     if (!removido)
       return res.status(404).json({ erro: "Usuário não encontrado" });
 

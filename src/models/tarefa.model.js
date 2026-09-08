@@ -1,7 +1,7 @@
 let tarefas = [
-  { id: 1, texto: "Estudar Node", prioridade: "alta", coluna: "afazer" },
-  { id: 2, texto: "Estudar Back-End", prioridade: "alta", coluna: "andamento" },
-  { id: 3, texto: "Testar PostMan", prioridade: "media", coluna: "concluido" },
+  { id: 1, texto: "Estudar Node", prioridade: "alta", coluna: "afazer", idUsuario: 1},
+  { id: 2, texto: "Estudar Back-End", prioridade: "alta", coluna: "andamento", idUsuario: 2},
+  { id: 3, texto: "Testar PostMan", prioridade: "media", coluna: "concluido", idUsuario: 3},
 ];
 let proximoId = 4;
 
@@ -12,12 +12,13 @@ module.exports = {
 
   buscar: (id) => tarefas.find((t) => t.id === id),
 
-  adicionar: ({ texto, prioridade, coluna }) => {
+  adicionar: ({ texto, prioridade, coluna, idUsuario}) => {
     const novaTarefa = {
       id: proximoId++,
       texto: texto,
       prioridade: prioridade || "media",
       coluna: coluna || "afazer",
+      idUsuario: idUsuario || null,
     };
     tarefas.push(novaTarefa);
     return novaTarefa;

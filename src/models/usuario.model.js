@@ -14,15 +14,15 @@ module.exports = {
   buscar: (id) => usuarios.find((u) => u.id === id),
 
   adicionar: ({ nome, email, senha }) => {
-    // const emailExiste = usuarios.find((u) => u.email === email);
-    // if (!nome || !email)
-    //   return res.status(400).json({ erro: "Nome e email obrigatórios!" });
+   const emailExiste = usuarios.find((u) => u.email === email);
+     if (!nome || !email)
+       return res.status(400).json({ erro: "Nome e email obrigatórios!" });
 
-    // if (emailExiste) {
-    //   return res.status(400).json({
-    //     erro: "Este email já está cadastrado",
-    //   });
-    // }
+     if (emailExiste) {
+       return res.status(400).json({
+         erro: "Este email já está cadastrado",
+       });
+     }
     const novoUsuario = {
       id: proximoIdUsuario++,
       nome: nome,
@@ -33,12 +33,12 @@ module.exports = {
     return novoUsuario;
   },
 
-//   atualizar: (id, dados) => {
-//     const idx = usuarios.findIndex((u) => u.id === id);
-//     if (idx === -1) return null;
-//     usuarios[idx] = { ...usuarios[idx], ...dados, id };
-//     return usuarios[idx];
-//   },
+  atualizar: (id, dados) => {
+    const idx = usuarios.findIndex((u) => u.id === id);
+    if (idx === -1) return null;
+    usuarios[idx] = { ...usuarios[idx], ...dados, id };
+    return usuarios[idx];
+  },
 
   remover: (id, dados) => {
     const idx = usuarios.findIndex((u) => u.id === id);

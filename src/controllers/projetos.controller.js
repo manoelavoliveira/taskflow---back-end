@@ -39,7 +39,8 @@ const projetosController = {
   },
 
   atualizar(req, res) {
-    const atualizado = projetoModel.atualizar(parseInt(req.params.id));
+    const dados = req.body;
+    const atualizado = projetoModel.atualizar(parseInt(req.params.id), dados);
     if (!atualizado)
       return res.status(404).json({ erro: "Projeto não encontrado" });
 

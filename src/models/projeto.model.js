@@ -23,10 +23,10 @@ module.exports = {
   },
 
   atualizar: (id, dados) => {
-    const idx = projetos.findIndex(p => p.id === id);
+    const idx = projetos.findIndex(p => p.id === id);  
     if (idx === -1) return null;
     projetos[idx] = {...projetos[idx], ...dados, id};
-    return tarefas[idx];
+    return projetos[idx];
   },
 
   remover: (id, dados) => {
