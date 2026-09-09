@@ -1,11 +1,21 @@
+require('dotenv').config();
 const express = require("express");
 const app = express();
-const PORTA = 3000;
+const PORTA = process.env.PORTA || 3001;
 const tarefasRoutes = require ('./src/routes/tarefas.routes');
 const usuariosRoutes = require ('./src/routes/usuarios.routes.js')
 const projetosRoutes = require ('./src/routes/projetos.routes.js');
 const validarContentType = require('./src/middlewares/validarContentType');
 const logger = require ('./src/middlewares/logger');
+//const corsMiddleware = require ('./src/middlewares/cors.js');
+const cors = require('cors');
+
+app.use(cors({
+  origin: process.env.CORS_ORIGIN || 'https://www.google.com',
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  maxAge: 86400,
+}));
 
 app.use(express.json());
 app.use(validarContentType);
@@ -29,7 +39,7 @@ app.use((req, res) => {
  });
 
  app.listen(PORTA, () => {
-   console.log("Servidor rodando em http://localhost:3000");
+   console.log("Servidor rodando em " + PORTA);
  });
 // ==============
 
