@@ -55,17 +55,17 @@ const tarefasController = {
   criar(req, res) {
     const { texto, prioridade, coluna, idUsuario } = req.body;
 
-    if (prioridade && !PRIORIDADES_VALIDAS.includes(prioridade))
-      return res
-        .status(400)
-        .json({ erro: "Prioridade inválida. Use: alta, media ou baixa" });
+    // if (prioridade && !PRIORIDADES_VALIDAS.includes(prioridade))
+    //   return res
+    //     .status(400)
+    //     .json({ erro: "Prioridade inválida. Use: alta, media ou baixa" });
 
-    if (coluna && !COLUNAS_VALIDAS.includes(coluna))
-      return res
-        .status(400)
-        .json({ erro: "Coluna inválida. Use: afazer, andamento ou concluido" });
+    // if (coluna && !COLUNAS_VALIDAS.includes(coluna))
+    //   return res
+    //     .status(400)
+    //     .json({ erro: "Coluna inválida. Use: afazer, andamento ou concluido" });
 
-    if (!texto) return res.status(400).json({ erro: "Texto obrigatório!" });
+    // if (!texto) return res.status(400).json({ erro: "Texto obrigatório!" });
 
     if (idUsuario !== undefined) {
       const usuario = usuarioModel.buscar(parseInt(idUsuario));
@@ -87,15 +87,15 @@ const tarefasController = {
     const atualizada = tarefaModel.atualizar(parseInt(req.params.id), req.body);
     const tarefa = tarefaModel.buscar(parseInt(req.params.id));
 
-    if (prioridade && !PRIORIDADES_VALIDAS.includes(prioridade))
-      return res
-        .status(400)
-        .json({ erro: "Prioridade inválida. Use: alta, media ou baixa" });
+    // if (prioridade && !PRIORIDADES_VALIDAS.includes(prioridade))
+    //   return res
+    //     .status(400)
+    //     .json({ erro: "Prioridade inválida. Use: alta, media ou baixa" });
 
-    if (coluna && !COLUNAS_VALIDAS.includes(coluna))
-      return res
-        .status(400)
-        .json({ erro: "Coluna inválida. Use: afazer, andamento ou concluido" });
+    // if (coluna && !COLUNAS_VALIDAS.includes(coluna))
+    //   return res
+    //     .status(400)
+    //     .json({ erro: "Coluna inválida. Use: afazer, andamento ou concluido" });
 
     if (coluna === 'andamento' && usuarioId) {
       // excluirId = id atual para não contar a própria tarefa
