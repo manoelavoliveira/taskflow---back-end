@@ -2,6 +2,7 @@ require('dotenv').config();
 const express = require("express");
 const app = express();
 const PORTA = process.env.PORTA || 3000;
+const authRoutes = require ('./src/routes/auth.routes.js')
 const tarefasRoutes = require ('./src/routes/tarefas.routes');
 const usuariosRoutes = require ('./src/routes/usuarios.routes.js')
 const projetosRoutes = require ('./src/routes/projetos.routes.js');
@@ -29,6 +30,7 @@ app.get("/", (req, res) => {
 app.use('/usuarios', usuariosRoutes)
 app.use('/tarefas', tarefasRoutes);
 app.use('/projetos', projetosRoutes);
+app.use('/auth', authRoutes);
 
 app.use((req, res) => {
    res.status(404).json({

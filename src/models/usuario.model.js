@@ -1,5 +1,5 @@
 let usuarios = [
-  { id: 1, nome: "admin", email: "admin@gmail.com", senha: "1234" },
+  { id: 1, nome: "admin", email: "admin@gmail.com", senha: "123456" },
   { id: 2, nome: "Ana", email: "Ana@hotmail.com", senha: "ana567" },
   { id: 3, nome: "João", email: "João@outlook.com", senha: "joao890" },
   { id: 4, nome: "Maria", email: "Maria@uol.com", senha: "maria00 " },
@@ -12,6 +12,8 @@ module.exports = {
   listarPorNome: (nome) => usuarios.filter((u) => u.nome === nome),
 
   buscar: (id) => usuarios.find((u) => u.id === id),
+
+  buscarPorEmail: (email) => usuarios.find(u => u.email === email),
 
   adicionar: ({ nome, email, senha }) => {
    const emailExiste = usuarios.find((u) => u.email === email);
