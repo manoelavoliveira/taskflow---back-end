@@ -2,6 +2,7 @@ require('dotenv').config();
 const express = require("express");
 const app = express();
 const PORTA = process.env.PORTA || 3000;
+const autenticar = require('./src/middlewares/autenticar');
 const authRoutes = require ('./src/routes/auth.routes.js')
 const tarefasRoutes = require ('./src/routes/tarefas.routes');
 const usuariosRoutes = require ('./src/routes/usuarios.routes.js')
@@ -10,6 +11,7 @@ const validarContentType = require('./src/middlewares/validarContentType');
 const logger = require ('./src/middlewares/logger');
 //const corsMiddleware = require ('./src/middlewares/cors.js');
 const cors = require('cors');
+
 
 app.use(cors({
   origin: process.env.CORS_ORIGIN || 'https://www.google.com',
@@ -28,8 +30,8 @@ app.get("/", (req, res) => {
 
 
 app.use('/usuarios', usuariosRoutes)
-app.use('/tarefas', tarefasRoutes);
-app.use('/projetos', projetosRoutes);
+app.use('/tarefas', autenticar, tarefasRoutes);
+app.use('/projetos', autenticar, projetosRoutes);
 app.use('/auth', authRoutes);
 
 app.use((req, res) => {

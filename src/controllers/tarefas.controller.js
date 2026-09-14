@@ -66,6 +66,11 @@ const tarefasController = {
     //     .json({ erro: "Coluna inválida. Use: afazer, andamento ou concluido" });
 
     // if (!texto) return res.status(400).json({ erro: "Texto obrigatório!" });
+    console.log(req.usuario);
+    const dados = {
+      ...req.body,
+      idUsuario: req.usuario.id
+    };
 
     if (idUsuario !== undefined) {
       const usuario = usuarioModel.buscar(parseInt(idUsuario));
@@ -79,7 +84,7 @@ const tarefasController = {
           erro: 'Limite de 2 tarefas em andamento por usuário atingido',
         });
     
-      res.status(201).json(tarefaModel.adicionar(req.body));
+      res.status(201).json(tarefaModel.adicionar(dados));
   },
 
   atualizar(req, res) {
