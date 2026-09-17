@@ -79,7 +79,7 @@ const tarefasController = {
       }
     }
      if (coluna === 'andamento' &&
-          tarefaModel.contarEmAndamentoPorUsuario(parseInt(usuarioId)) >= 2)
+          tarefaModel.contarEmAndamentoPorUsuario(parseInt(idUsuario)) >= 2)
         return res.status(400).json({
           erro: 'Limite de 2 tarefas em andamento por usuário atingido',
         });
@@ -102,9 +102,9 @@ const tarefasController = {
     //     .status(400)
     //     .json({ erro: "Coluna inválida. Use: afazer, andamento ou concluido" });
 
-    if (coluna === 'andamento' && usuarioId) {
+    if (coluna === 'andamento' && idUsuario) {
       // excluirId = id atual para não contar a própria tarefa
-      if (tarefaModel.contarEmAndamentoPorUsuario(parseInt(usuarioId), id) >= 2)
+      if (tarefaModel.contarEmAndamentoPorUsuario(parseInt(idUsuario), id) >= 2)
         return res.status(400).json({
           erro: 'Limite de 2 tarefas em andamento por usuário atingido',
         });
