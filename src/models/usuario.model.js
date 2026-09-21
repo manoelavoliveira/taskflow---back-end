@@ -1,5 +1,5 @@
 let usuarios = [
-  { id: 1, nome: "admin", email: "admin@gmail.com", senha: "123456" },
+  { id: 1, nome: "admin", email: "admin@email.com", senha: "123456" },
   { id: 2, nome: "Ana", email: "Ana@hotmail.com", senha: "ana567" },
   { id: 3, nome: "João", email: "João@outlook.com", senha: "joao890" },
   { id: 4, nome: "Maria", email: "Maria@uol.com", senha: "maria00" },
