@@ -11,7 +11,7 @@ const schemas = {
       tipo: "string",
       enum: ["afazer", "andamento", "concluido"],
     },
-    idUsuario: { obrigatorio: false, tipo: "number" },
+    usuario_id: { obrigatorio: false, tipo: "number" },
   },
 
   usuario: {

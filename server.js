@@ -11,7 +11,7 @@ const validarContentType = require('./src/middlewares/validarContentType');
 const logger = require ('./src/middlewares/logger');
 //const corsMiddleware = require ('./src/middlewares/cors.js');
 const cors = require('cors');
-
+const pool = require('./src/database/db');
 
 app.use(cors({
   origin: process.env.CORS_ORIGIN || 'http://localhost:5173',
@@ -57,4 +57,9 @@ app.use((req, res) => {
 //     res.status(401).json({ erro: "Acesso negado!" });
 //   }
 // });
+
+pool.query('SELECT NOW()', (err,res) => {
+    if (err) console.error('Erro ao conectar:', err.message);
+    else console.log('Banco conectado:', res.rows[0].now)
+})
 //

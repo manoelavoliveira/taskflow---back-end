@@ -33,17 +33,17 @@ const tarefasController = {
     res.json(resumo);
   },
 
-  listar(req, res) {
-    const { idUsuario, coluna } = req.query;
+  async listar(req, res) {
+    const { usuario_id, coluna } = req.query;
     let resultado = coluna
       ? tarefaModel.listarPorColuna(coluna)
-      : tarefaModel.listar();
+      : await tarefaModel.listar();
 
     res.json(resultado);
   },
 
-  buscarPorId(req, res) {
-    const tarefa = tarefaModel.buscar(parseInt(req.params.id));
+  async buscarPorId(req, res) {
+    const tarefa = await tarefaModel.buscar(parseInt(req.params.id));
 
     if (!tarefa) {
       return res.status(404).json({ erro: "Tarefa não encontrada" });
@@ -52,8 +52,8 @@ const tarefasController = {
     res.json(tarefa);
   },
 
-  criar(req, res) {
-    const { texto, prioridade, coluna, idUsuario } = req.body;
+  async criar(req, res) {
+    const { texto, prioridade, coluna, usuario_id } = req.body;
 
     // if (prioridade && !PRIORIDADES_VALIDAS.includes(prioridade))
     //   return res
@@ -69,27 +69,27 @@ const tarefasController = {
     console.log(req.usuario);
     const dados = {
       ...req.body,
-      idUsuario: req.usuario.id
+      usuario_id: req.usuario.id
     };
 
-    if (idUsuario !== undefined) {
-      const usuario = usuarioModel.buscar(parseInt(idUsuario));
-      if (!usuario) {
-        return res.status(400).json({ erro: "Usuário não encontrado" });
-      }
-    }
-     if (coluna === 'andamento' &&
-          tarefaModel.contarEmAndamentoPorUsuario(parseInt(idUsuario)) >= 2)
-        return res.status(400).json({
-          erro: 'Limite de 2 tarefas em andamento por usuário atingido',
-        });
+    // if (idUsuario !== undefined) {
+    //   const usuario = usuarioModel.buscar(parseInt(idUsuario));
+    //   if (!usuario) {
+    //     return res.status(400).json({ erro: "Usuário não encontrado" });
+    //   }
+    // }
+    //  if (coluna === 'andamento' &&
+    //       tarefaModel.contarEmAndamentoPorUsuario(parseInt(idUsuario)) >= 2)
+    //     return res.status(400).json({
+    //       erro: 'Limite de 2 tarefas em andamento por usuário atingido',
+    //     });
     
-      res.status(201).json(tarefaModel.adicionar(dados));
+      res.status(201).json(await tarefaModel.adicionar(dados));
   },
 
-  atualizar(req, res) {
-    const { coluna, prioridade, idUsuario } = req.body;
-    const atualizada = tarefaModel.atualizar(parseInt(req.params.id), req.body);
+  async atualizar(req, res) {
+    const { coluna, prioridade, usuario_id } = req.body;
+    const atualizada = await tarefaModel.atualizar(parseInt(req.params.id), req.body);
     const tarefa = tarefaModel.buscar(parseInt(req.params.id));
 
     // if (prioridade && !PRIORIDADES_VALIDAS.includes(prioridade))
@@ -102,9 +102,9 @@ const tarefasController = {
     //     .status(400)
     //     .json({ erro: "Coluna inválida. Use: afazer, andamento ou concluido" });
 
-    if (coluna === 'andamento' && idUsuario) {
+    if (coluna === 'andamento' && usuario_id) {
       // excluirId = id atual para não contar a própria tarefa
-      if (tarefaModel.contarEmAndamentoPorUsuario(parseInt(idUsuario), id) >= 2)
+      if (tarefaModel.contarEmAndamentoPorUsuario(parseInt(usuario_id), id) >= 2)
         return res.status(400).json({
           erro: 'Limite de 2 tarefas em andamento por usuário atingido',
         });
@@ -116,8 +116,8 @@ const tarefasController = {
     res.json(atualizada);
   },
 
-  remover(req, res) {
-    const removida = tarefaModel.remover(parseInt(req.params.id));
+  async remover(req, res) {
+    const removida = await tarefaModel.remover(parseInt(req.params.id));
 
     if (!removida)
       return res.status(404).json({ erro: "Tarefa não encontrada" });
