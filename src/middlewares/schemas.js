@@ -1,10 +1,10 @@
 const schemas = {
   tarefa: {
     texto: { obrigatorio: true, tipo: "string", minLength: 3 },
-    prioridade: {
+    idprioridade: {
       obrigatorio: true,
-      tipo: "string",
-      enum: ["alta", "media", "baixa"],
+      tipo: "number",
+      enum: [1, 2, 3],
     },
     coluna: {
       obrigatorio: true,
@@ -17,7 +17,7 @@ const schemas = {
   usuario: {
     nome: { obrigatorio: true, tipo: "string", minLength: 3 },
     email: { obrigatorio: true, tipo: "string", formato: "email" },
-    senha: { obrigatorio: true, tipo: "string", minLength: 6 },
+    senha_hash: { obrigatorio: true, tipo: "string", minLength: 6 },
   },
 
   projeto: {

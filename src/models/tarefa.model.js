@@ -67,19 +67,19 @@ module.exports = {
     return result.rows[0] || null;
    },
 
-  adicionar: async ({texto, prioridade, coluna, usuarioId, projetoId}) => {
+  adicionar: async ({texto, idprioridade, coluna, usuario_id, projeto_id}) => {
     const result = await pool.query(
-      'INSERT INTO tarefas (texto, prioridade, coluna, usuario_id, projeto_id) VALUES ($1, $2, $3, $4, $5) RETURNING *',
-      [texto, prioridade||'media', coluna||'afazer', usuarioId, projetoId]
+      'INSERT INTO tarefas (texto, idprioridade, coluna, usuario_id, projeto_id) VALUES ($1, $2, $3, $4, $5) RETURNING *',
+      [texto, idprioridade||'media', coluna||'afazer', usuario_id, projeto_id]
     );
     return result.rows[0];
   },
 
   atualizar: async (id, dados) => {
-    const {texto, prioridade, coluna, usuarioId} = dados;
+    const {texto, idprioridade, coluna, usuario_id} = dados;
     const result = await pool.query(
-      'UPDATE tarefas SET texto=$1, prioridade=$2, coluna=$3, usuario_id=$4 WHERE id=$5 RETURNING *',
-      [texto, prioridade, coluna, usuarioId, id]
+      'UPDATE tarefas SET texto=$1, idprioridade=$2, coluna=$3, usuario_id=$4 WHERE id=$5 RETURNING *',
+      [texto, idprioridade, coluna, usuario_id, id]
     );
     return result.rows[0] || null;
   },

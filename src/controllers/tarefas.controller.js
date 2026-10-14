@@ -53,7 +53,7 @@ const tarefasController = {
   },
 
   async criar(req, res) {
-    const { texto, prioridade, coluna, usuario_id } = req.body;
+    const { texto, idprioridade, coluna, usuario_id } = req.body;
 
     // if (prioridade && !PRIORIDADES_VALIDAS.includes(prioridade))
     //   return res
@@ -88,7 +88,7 @@ const tarefasController = {
   },
 
   async atualizar(req, res) {
-    const { coluna, prioridade, usuario_id } = req.body;
+    const { coluna, idprioridade, usuario_id } = req.body;
     const atualizada = await tarefaModel.atualizar(parseInt(req.params.id), req.body);
     const tarefa = tarefaModel.buscar(parseInt(req.params.id));
 
