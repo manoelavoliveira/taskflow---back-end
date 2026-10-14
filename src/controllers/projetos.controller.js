@@ -2,9 +2,9 @@ const projetoModel = require("../models/projeto.model");
 const tarefaModel = require("../models/tarefa.model");
 
 const projetosController = {
-  listar(req, res) {
-    const { nome, ativo } = req.query;
-    let resultado = projetoModel.listar();
+  async listar(req, res) {
+    const { nome  } = req.query;
+    let resultado = await projetoModel.listar();
 
     // if (nome) {
     //   resultado = resultado.filter((p) => p.nome === nome);
@@ -29,16 +29,16 @@ const projetosController = {
     });
   },
 
-  buscarPorId(req, res) {
-    const projeto = projetoModel.buscar(parseInt(req.params.id));
+  async buscarPorId(req, res) {
+    const projeto = await projetoModel.buscar(parseInt(req.params.id));
 
     if (!projeto) return res.status(400).json({ erro: "Projeto não existe." });
 
     res.json(projeto);
   },
 
-  criar(req, res) {
-    const { nome, descricao, ativo } = req.body;
+  async criar(req, res) {
+    const { nome, descricao, usuario_id } = req.body;
 
     if (!nome)
       return res.status(400).json({ erro: "O nome do projeto é obrigatório!" });
@@ -50,7 +50,7 @@ const projetosController = {
     // };
     // projetos.push(novoProjeto);
 
-    res.json(projetoModel.adicionar(req.body));
+    res.json(await projetoModel.adicionar(req.body));
   },
 
   atualizar(req, res) {

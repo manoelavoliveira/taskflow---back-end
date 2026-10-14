@@ -41,10 +41,10 @@ module.exports = {
   // listarPorProjeto: (projetoId) =>
   //   tarefas.filter((t) => t.projetoId === projetoId),
 
-  contarEmAndamentoPorUsuario: async (usuarioId, excluirId) => {
+  contarEmAndamentoPorUsuario: async (usuario_id, excluirid) => {
     const result = await pool.query(
-      'SELECT COUNT(*) FROM tarefas WHERE usuarioId = $1 AND coluna=$2 AND id!=$3',
-      [usuarioId, 'andamento', excluirid]
+      'SELECT COUNT(*) FROM tarefas WHERE usuario_id = $1 AND coluna=$2 AND id!=$3',
+      [usuario_id, 'andamento', excluirid]
     );
     return parseInt(result.rows[0].count);
   },
@@ -67,10 +67,10 @@ module.exports = {
     return result.rows[0] || null;
    },
 
-  adicionar: async ({texto, idprioridade, coluna, usuario_id, projeto_id}) => {
+  adicionar: async ({texto, idprioridade, coluna, usuario_id, projeto_id, ordem}) => {
     const result = await pool.query(
-      'INSERT INTO tarefas (texto, idprioridade, coluna, usuario_id, projeto_id) VALUES ($1, $2, $3, $4, $5) RETURNING *',
-      [texto, idprioridade||'media', coluna||'afazer', usuario_id, projeto_id]
+      'INSERT INTO tarefas (texto, idprioridade, coluna, usuario_id, projeto_id, ordem) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
+      [texto, idprioridade|| 2, coluna||'afazer', usuario_id, projeto_id, ordem || 0]
     );
     return result.rows[0];
   },

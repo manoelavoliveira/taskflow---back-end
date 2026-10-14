@@ -53,38 +53,33 @@ const tarefasController = {
   },
 
   async criar(req, res) {
-    const { texto, idprioridade, coluna, usuario_id } = req.body;
+    const { texto, idprioridade, coluna, usuario_id, projeto_id, ordem} = req.body;
 
-    // if (prioridade && !PRIORIDADES_VALIDAS.includes(prioridade))
-    //   return res
-    //     .status(400)
-    //     .json({ erro: "Prioridade inválida. Use: alta, media ou baixa" });
 
     // if (coluna && !COLUNAS_VALIDAS.includes(coluna))
     //   return res
     //     .status(400)
     //     .json({ erro: "Coluna inválida. Use: afazer, andamento ou concluido" });
 
-    // if (!texto) return res.status(400).json({ erro: "Texto obrigatório!" });
-    console.log(req.usuario);
-    const dados = {
-      ...req.body,
-      usuario_id: req.usuario.id
-    };
+    //  if (!texto) return res.status(400).json({ erro: "Texto obrigatório!" });
+    // console.log(req.usuario);
+    // const dados = {
+    //   ...req.body,
+    //   usuario_id: req.usuario.id
+    // };
 
-    // if (idUsuario !== undefined) {
-    //   const usuario = usuarioModel.buscar(parseInt(idUsuario));
-    //   if (!usuario) {
-    //     return res.status(400).json({ erro: "Usuário não encontrado" });
-    //   }
-    // }
-    //  if (coluna === 'andamento' &&
-    //       tarefaModel.contarEmAndamentoPorUsuario(parseInt(idUsuario)) >= 2)
-    //     return res.status(400).json({
-    //       erro: 'Limite de 2 tarefas em andamento por usuário atingido',
-    //     });
+    // if (!usuario_id)
+    //   return res.status(400).json({erro: 'O campo usuario_id é obrigatório'});
+    // if (!projeto_id)
+    //   return res.status(400).json({erro: 'O campo projeto_id é obrigatório'});
+
+     if (coluna === 'andamento' &&
+          tarefaModel.contarEmAndamentoPorUsuario(parseInt(usuario_id)) >= 2)
+        return res.status(400).json({
+          erro: 'Limite de 2 tarefas em andamento por usuário atingido',
+        });               
     
-      res.status(201).json(await tarefaModel.adicionar(dados));
+      res.status(201).json(await tarefaModel.adicionar(req.body));
   },
 
   async atualizar(req, res) {
