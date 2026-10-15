@@ -1,5 +1,6 @@
 const tarefaModel = require("../models/tarefa.model");
 const usuarioModel = require("../models/usuario.model");
+const criarErro = require("../utils/criarErro");
 
 const usuariosController = {
 
@@ -16,7 +17,7 @@ const usuariosController = {
     const usuario = await usuarioModel.buscar(parseInt(req.params.id));
 
     if (!usuario) {
-      return res.status(404).json({ erro: "Usuário não encontrado" });
+      throw criarErro(404, "Usuário não encontrado");
     }
 
     res.json(usuario);
@@ -54,7 +55,7 @@ const usuariosController = {
     );
 
     if (!atualizado) {
-      return res.status(404).json({ erro: "Usuário não encontrado" });
+      throw criarErro(404, "Usuário não encontrado para atualizar");
     }
     
     res.json(atualizado);
@@ -70,7 +71,7 @@ const usuariosController = {
     //     erro: 'Usuário possui tarefas. Remova as tarefas antes de deletar o usuário.',
     //   });
     if (!removido)
-      return res.status(404).json({ erro: "Usuário não encontrado" });
+      throw criarErro(404, "Usuário não encontrado para remover");
 
     res.json({ mensagem: "Usuário removido com sucesso", usuario: removido });
   },

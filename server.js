@@ -12,6 +12,7 @@ const logger = require ('./src/middlewares/logger');
 //const corsMiddleware = require ('./src/middlewares/cors.js');
 const cors = require('cors');
 const pool = require('./src/database/db');
+const tratarErros = require('./src/middlewares/erro.middleware.js');
 
 app.use(cors({
   origin: process.env.CORS_ORIGIN || 'http://localhost:5173',
@@ -29,7 +30,7 @@ app.get("/", (req, res) => {
 });
 
 
-app.use('/usuarios', usuariosRoutes)
+app.use('/usuarios', autenticar, usuariosRoutes)
 app.use('/tarefas', autenticar, tarefasRoutes);
 app.use('/projetos', autenticar, projetosRoutes);
 app.use('/auth', authRoutes);
@@ -41,6 +42,8 @@ app.use((req, res) => {
 //     caminho: req.url,
    });
  });
+
+ app.use(tratarErros);
 
  app.listen(PORTA, () => {
    console.log("Servidor rodando em " + PORTA);
