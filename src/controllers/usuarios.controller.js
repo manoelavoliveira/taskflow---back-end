@@ -2,10 +2,11 @@ const tarefaModel = require("../models/tarefa.model");
 const usuarioModel = require("../models/usuario.model");
 
 const usuariosController = {
+
   async listar (req, res){
     const { nome } = req.query;
     let resultado = nome
-      ? usuarioModel.listarPorNome(nome)
+      ? await usuarioModel.listarPorNome(nome)
       : await usuarioModel.listar();
 
     res.json(resultado);
@@ -22,7 +23,9 @@ const usuariosController = {
   },
 
   async criar(req, res) {
-    const { nome, email, senha } = req.body;
+    const { nome, email, senha_hash } = req.body;
+     if (await usuarioModel.buscarPorEmail(email))
+        return res.status(400).json({ erro: 'Email já cadastrado' });
     // if (!nome || !email || !senha) {
     //   return res
     //     .status(400)
@@ -35,7 +38,7 @@ const usuariosController = {
     // if (emailExiste) {
     //   return res.status(400).json({ erro: "Este email já existe!" });
     // }
-    res.status(201).json(await usuarioModel.adicionar(req.body));
+    res.status(201).json(await usuarioModel.adicionar({ nome, email, senha_hash }));
   },
 
   async atualizar(req, res) {
@@ -62,7 +65,7 @@ const usuariosController = {
     // const tarefasUsuario = tarefaModel.listar().filter((t) => t.idUsuario === id);
     const removido = await usuarioModel.remover(parseInt(req.params.id));
 
-    // if (tarefaModel.contarPorUsuario(id) > 0)
+    // if ( await tarefaModel.contarPorUsuario(id) > 0)
     //   return res.status(400).json({
     //     erro: 'Usuário possui tarefas. Remova as tarefas antes de deletar o usuário.',
     //   });

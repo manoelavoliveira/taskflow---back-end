@@ -16,11 +16,20 @@ module.exports = {
     return result.rows;
   },
 
-  listarPorNome: (nome) => usuarios.filter((u) => u.nome === nome),
+  listarPorNome: async (nome) => {
+        const result = await pool.query('SELECT * FROM usuarios WHERE nome = $1', [nome]);
+        return result.rows[0] || null;
+    },
 
-  buscar: (id) => usuarios.find((u) => u.id === id),
+  buscar: async (id) => {
+        const result = await pool.query('SELECT * FROM usuarios WHERE id = $1', [id]);
+        return result.rows[0] || null;
+  },
 
-  buscarPorEmail: (email) => usuarios.find(u => u.email === email),
+  buscarPorEmail: async (email) => {
+        const result = await pool.query('SELECT * FROM usuarios WHERE email = $1', [email]);
+        return result.rows[0] || null;
+    },
 
   adicionar: async ({ nome, email, senha_hash }) => {
     const result = await pool.query(
