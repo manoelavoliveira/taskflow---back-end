@@ -47,6 +47,7 @@ const tarefasController = {
     const tarefa = await tarefaModel.buscar(parseInt(req.params.id));
 
     if (!tarefa) {
+      console.log('Passei aqui');
       throw criarErro(404, "Tarefa não encontrada");
     }
 
