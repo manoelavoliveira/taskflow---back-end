@@ -76,10 +76,18 @@ module.exports = {
   },
 
   atualizar: async (id, dados) => {
-    const {texto, idprioridade, coluna, usuario_id} = dados;
+    const tarefaAtual = await pool.query('SELECT * FROM tarefas WHERE id = $1', [id]);
+    const finalizadaEm = dados.coluna === 'concluido' ? new Date() : null;
+    //let iniciadaEm = dados.coluna === 'andamento' && tarefaAtual.rows[0].iniciada_em === null ? new Date() : tarefaAtual.row[0].iniciada_em;
+    // let iniciadaEm = tarefaAtual.rows[0].iniciada_em;
+
+    // if(tarefaAtual.rows[0].coluna = 'afazer')
+
+    
+    // const {texto, idprioridade, coluna, usuario_id, concluidoEm} = dados;
     const result = await pool.query(
-      'UPDATE tarefas SET texto=$1, idprioridade=$2, coluna=$3, usuario_id=$4 WHERE id=$5 RETURNING *',
-      [texto, idprioridade, coluna, usuario_id, id]
+      'UPDATE tarefas SET texto=$1, idprioridade=$2, coluna=$3, usuario_id=$4, projeto_id=$5, finalizada_em=$6 WHERE id=$7 RETURNING *',
+      [dados.texto, dados.idprioridade, dados.coluna, dados.usuario_id, dados.projeto_id, finalizadaEm, id]
     );
     return result.rows[0] || null;
   },
