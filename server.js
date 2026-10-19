@@ -13,6 +13,7 @@ const logger = require ('./src/middlewares/logger');
 const cors = require('cors');
 const pool = require('./src/database/db');
 const tratarErros = require('./src/middlewares/erro.middleware.js');
+const criarErro = require('./src/utils/criarErro.js')
 
 app.use(cors({
   origin: process.env.CORS_ORIGIN || 'http://localhost:5173',
@@ -34,6 +35,11 @@ app.use('/usuarios', autenticar, usuariosRoutes)
 app.use('/tarefas', autenticar, tarefasRoutes);
 app.use('/projetos', autenticar, projetosRoutes);
 app.use('/auth', authRoutes);
+
+pool.query('SELECT NOW()', (err,res) => {
+    if (err) console.error('Erro ao conectar:', err.message);
+    else console.log('Banco conectado:', res.rows[0].now)
+})
 
 app.use((req, res) => {
   const rota = `${req.method} ${req.url}`;
@@ -62,8 +68,5 @@ app.use((req, res) => {
 //   }
 // });
 
-pool.query('SELECT NOW()', (err,res) => {
-    if (err) console.error('Erro ao conectar:', err.message);
-    else console.log('Banco conectado:', res.rows[0].now)
-})
+
 //
