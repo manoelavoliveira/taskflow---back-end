@@ -76,20 +76,50 @@ module.exports = {
   },
 
   atualizar: async (id, dados) => {
-    const tarefaAtual = await pool.query('SELECT * FROM tarefas WHERE id = $1', [id]);
-    const finalizadaEm = dados.coluna === 'concluido' ? new Date() : null;
-    //let iniciadaEm = dados.coluna === 'andamento' && tarefaAtual.rows[0].iniciada_em === null ? new Date() : tarefaAtual.row[0].iniciada_em;
-    // let iniciadaEm = tarefaAtual.rows[0].iniciada_em;
+    // const tarefaAtual = await pool.query('SELECT * FROM tarefas WHERE id = $1', [id]);
+    // const finalizadaEm = dados.coluna === 'concluido' ? new Date() : null;
+    // //let iniciadaEm = dados.coluna === 'andamento' && tarefaAtual.rows[0].iniciada_em === null ? new Date() : tarefaAtual.row[0].iniciada_em;
+    //  let iniciadaEm = tarefaAtual.rows[0].iniciada_em;
 
-    // if(tarefaAtual.rows[0].coluna = 'afazer')
+    //  if(tarefaAtual.rows[0].coluna === 'andamento' & dados.coluna === 'afazer') {
+    //   iniciadaEm = null;
+    //  } else if (tarefaAtual.rows[0].coluna === 'afazer' && dados.coluna === 'andamento') {
+    //   iniciadaEm = new Date();
+    //  };
 
     
-    // const {texto, idprioridade, coluna, usuario_id, concluidoEm} = dados;
-    const result = await pool.query(
-      'UPDATE tarefas SET texto=$1, idprioridade=$2, coluna=$3, usuario_id=$4, projeto_id=$5, finalizada_em=$6 WHERE id=$7 RETURNING *',
-      [dados.texto, dados.idprioridade, dados.coluna, dados.usuario_id, dados.projeto_id, finalizadaEm, id]
-    );
-    return result.rows[0] || null;
+    // // const {texto, idprioridade, coluna, usuario_id, finalizadaEm, iniciadaEm} = dados;
+    // const result = await pool.query(
+    //   'UPDATE tarefas SET texto=$1, idprioridade=$2, coluna=$3, usuario_id=$4, projeto_id=$5, finalizada_em=$6, iniciada_em=$7 WHERE id=$8 RETURNING *',
+    //   [dados.texto, dados.idprioridade, dados.coluna, dados.usuario_id, dados.projeto_id, finalizadaEm, iniciadaEm, id]
+    // );
+    // return result.rows[0] || null;
+
+        const tarefaAtual = await pool.query('SELECT * FROM tarefas WHERE id = $1', [id]);
+        const finalizadaEm = dados.coluna === 'concluido' ? new Date() : null;
+
+        let iniciadaEm = tarefaAtual.rows[0].iniciada_em;
+
+        if (tarefaAtual.rows[0].coluna === 'andamento' && dados.coluna === 'afazer') {
+            iniciadaEm = null;
+        } else if (tarefaAtual.rows[0].coluna === 'afazer' && dados.coluna === 'andamento') {
+            iniciadaEm = new Date();
+        };
+
+        const result = await pool.query(
+            `UPDATE tarefas SET 
+                texto=$1,
+                coluna=$2,
+                usuario_id=$3,
+                projeto_id=$4,
+                idprioridade=$5,
+                finalizada_em=$6,
+                iniciada_em=$7
+            WHERE id=$8 
+            RETURNING *`,
+            [dados.texto, dados.coluna, dados.usuario_id, dados.projeto_id, dados.idprioridade, finalizadaEm, iniciadaEm, id]
+        );
+        return result.rows[0] || null;
   },
 
   remover: async (id) => {
