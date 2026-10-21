@@ -62,7 +62,12 @@ module.exports = {
 
   buscar: async (id) => {
     const result = await pool.query(
-      'SELECT * FROM tarefas WHERE id = $1',[id]
+      // 'SELECT * FROM tarefas WHERE id = $1',[id]
+      `SELECT t.*, p.nome as projeto, u.nome as usuario, pr.descricao as prioridade FROM tarefas t
+      inner join projetos p on t.projeto_id = p.id
+      inner join usuarios u on t.usuario_id = u.id
+      inner join prioridades pr on t.idprioridade = pr.id
+      ORDER BY t.id`
     );
     return result.rows[0] || null;
    },
