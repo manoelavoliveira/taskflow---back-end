@@ -1,9 +1,11 @@
 const pool = require('../database/db');
 
-module.exports = {
+prioridadeModel = {
   listar: async () => {
     const result = await pool.query(
-      'SELECT * FROM prioridades ORDER BY id'
+      'SELECT id, descricao, ativo FROM prioridades ORDER BY id'
     );
     return result.rows;
   }}
+
+  module.exports = prioridadeModel;

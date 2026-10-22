@@ -5,12 +5,12 @@ const criarErro = require("../utils/criarErro");
 const usuariosController = {
 
   async listar (req, res){
-    const { nome } = req.query;
-    let resultado = nome
-      ? await usuarioModel.listarPorNome(nome)
-      : await usuarioModel.listar();
+    // const { nome } = req.query;
+    // let resultado = nome
+    //   ? await usuarioModel.listarPorNome(nome)
+    //   : await usuarioModel.listar();
 
-    res.json(resultado);
+    res.json(await usuarioModel.listar());
   },
 
   async buscarPorId(req, res) {
@@ -24,9 +24,11 @@ const usuariosController = {
   },
 
   async criar(req, res) {
-    const { nome, email, senha_hash } = req.body;
-     if (await usuarioModel.buscarPorEmail(email))
-        return res.status(400).json({ erro: 'Email já cadastrado' });
+    const { nome, email } = req.body;
+
+    res.status(201).json(await usuarioModel.adicionar({ nome, email }));
+    //  if (await usuarioModel.buscarPorEmail(email))
+    //     return res.status(400).json({ erro: 'Email já cadastrado' });
     // if (!nome || !email || !senha) {
     //   return res
     //     .status(400)
@@ -39,7 +41,7 @@ const usuariosController = {
     // if (emailExiste) {
     //   return res.status(400).json({ erro: "Este email já existe!" });
     // }
-    res.status(201).json(await usuarioModel.adicionar({ nome, email, senha_hash }));
+    // res.status(201).json(await usuarioModel.adicionar({ nome, email, senha_hash }));
   },
 
   async atualizar(req, res) {
@@ -64,7 +66,7 @@ const usuariosController = {
   async remover(req, res) {
     const id = parseInt(req.params.id);    
     // const tarefasUsuario = tarefaModel.listar().filter((t) => t.idUsuario === id);
-    const removido = await usuarioModel.remover(parseInt(req.params.id));
+    const removido = await usuarioModel.remover(id);
 
     // if ( await tarefaModel.contarPorUsuario(id) > 0)
     //   return res.status(400).json({

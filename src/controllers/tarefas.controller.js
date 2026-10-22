@@ -47,7 +47,6 @@ const tarefasController = {
     const tarefa = await tarefaModel.buscar(parseInt(req.params.id));
 
     if (!tarefa) {
-      console.log('Passei aqui');
       throw criarErro(404, "Tarefa não encontrada");
     }
 
@@ -55,45 +54,38 @@ const tarefasController = {
   },
 
   async criar(req, res) {
-    const { texto, idprioridade, coluna, usuario_id, projeto_id, ordem } =
-      req.body;
-
+    res.status(201).json(await tarefaModel.adicionar(req.body));
+    
+    // const { texto, idprioridade, coluna, usuario_id, projeto_id, ordem } =
+    //   req.body;
     // if (coluna && !COLUNAS_VALIDAS.includes(coluna))
     //   return res
     //     .status(400)
     //     .json({ erro: "Coluna inválida. Use: afazer, andamento ou concluido" });
-
     //  if (!texto) return res.status(400).json({ erro: "Texto obrigatório!" });
     // console.log(req.usuario);
     // const dados = {
     //   ...req.body,
     //   usuario_id: req.usuario.id
     // };
-
     // if (!usuario_id)
     //   return res.status(400).json({erro: 'O campo usuario_id é obrigatório'});
     // if (!projeto_id)
     //   return res.status(400).json({erro: 'O campo projeto_id é obrigatório'});
+    // if (
+    //   coluna === "andamento" &&
+    //   tarefaModel.contarEmAndamentoPorUsuario(parseInt(usuario_id)) >= 2
+    // )
+    //   return res.status(400).json({
+    //     erro: "Limite de 2 tarefas em andamento por usuário atingido",
+    //   });
 
-    if (
-      coluna === "andamento" &&
-      tarefaModel.contarEmAndamentoPorUsuario(parseInt(usuario_id)) >= 2
-    )
-      return res.status(400).json({
-        erro: "Limite de 2 tarefas em andamento por usuário atingido",
-      });
-
-    res.status(201).json(await tarefaModel.adicionar(req.body));
   },
 
   async atualizar(req, res) {
-    const { coluna, idprioridade, usuario_id } = req.body;
-    const atualizada = await tarefaModel.atualizar(
-      parseInt(req.params.id),
-      req.body,
+    const id = parseInt(req.params.id);
+    const atualizada = await tarefaModel.atualizar(id, req.body,
     );
-    const tarefa = tarefaModel.buscar(parseInt(req.params.id));
-
     // if (prioridade && !PRIORIDADES_VALIDAS.includes(prioridade))
     //   return res
     //     .status(400)
@@ -104,15 +96,15 @@ const tarefasController = {
     //     .status(400)
     //     .json({ erro: "Coluna inválida. Use: afazer, andamento ou concluido" });
 
-    if (coluna === "andamento" && usuario_id) {
-      // excluirId = id atual para não contar a própria tarefa
-      if (
-        tarefaModel.contarEmAndamentoPorUsuario(parseInt(usuario_id), id) >= 2
-      )
-        return res.status(400).json({
-          erro: "Limite de 2 tarefas em andamento por usuário atingido",
-        });
-    }
+    // if (coluna === "andamento" && usuario_id) {
+    //   // excluirId = id atual para não contar a própria tarefa
+    //   if (
+    //     tarefaModel.contarEmAndamentoPorUsuario(parseInt(usuario_id), id) >= 2
+    //   )
+    //     return res.status(400).json({
+    //       erro: "Limite de 2 tarefas em andamento por usuário atingido",
+    //     });
+    // }
 
     if (!atualizada)
       throw criarErro(404, "Tarefa não encontrada para atualizar");
