@@ -24,9 +24,9 @@ const usuariosController = {
   },
 
   async criar(req, res) {
-    const { nome, email } = req.body;
+    const { nome, email, senha_hash } = req.body;
 
-    res.status(201).json(await usuarioModel.adicionar({ nome, email }));
+    res.status(201).json(await usuarioModel.adicionar({ nome, email, senha_hash }));
     //  if (await usuarioModel.buscarPorEmail(email))
     //     return res.status(400).json({ erro: 'Email já cadastrado' });
     // if (!nome || !email || !senha) {
