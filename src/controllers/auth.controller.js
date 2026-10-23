@@ -11,11 +11,11 @@ const authController = {
 
         const usuario = await usuarioModel.buscarPorEmail (email);
         if (!usuario)
-            return res.status(401).json({ erro: 'Credenciais inválidas' });
+            return res.status(401).json({ erro: 'Credenciais inválidas 1' });
 
-        if (usuario.senha_hash !== senha_hash)
-            return res.status(401).json({ erro: 'Credenciais inválidas' });
-
+        if (usuario.senha_hash !== senha_hash){
+            return res.status(401).json({ erro: 'Credenciais inválidas 2' });
+        }
         const token = jwt.sign(
             { id: usuario.id, nome: usuario.nome },
             process.env.JWT_SECRET,

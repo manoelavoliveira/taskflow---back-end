@@ -27,7 +27,7 @@ module.exports = {
   },
 
   buscarPorEmail: async (email) => {
-        const result = await pool.query('SELECT id, nome, email FROM usuarios WHERE email = $1', [email]);
+        const result = await pool.query('SELECT id, nome, senha_hash, email FROM usuarios WHERE email = $1', [email]);
         return result.rows[0] || null;
     },
 
