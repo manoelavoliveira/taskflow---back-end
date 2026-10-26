@@ -1,11 +1,14 @@
 const pool = require('../database/db');
+const prisma = require('../database/prisma')
 
 prioridadeModel = {
   listar: async () => {
-    const result = await pool.query(
-      'SELECT id, descricao, ativo FROM prioridades ORDER BY id'
-    );
-    return result.rows;
+    const result = await prisma.prioridades.findMany({
+      select: { id: true, descricao: true, ativo: true, cor: true},
+      where: {ativo: true},
+      orderBy: {id: 'asc'}
+  });
+    return result;
   }}
 
   module.exports = prioridadeModel;

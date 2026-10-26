@@ -24,18 +24,51 @@
 // let proximoId = 4;
 
 const pool = require("../database/db");
+const prisma = require("../database/prisma")
+
+const incluirNomes = {
+  projetos: {select: { nome: true }},
+  usuarios: {select: { nome: true }},
+  prioridades: {select: { descricao: true, cor: true }},
+};
+
+function formatarTarefa(tarefa) {
+  const { projetos, usuarios, prioridades, ...resto } = tarefa;
+  return {
+    ...resto,
+    projeto: projetos?.nome,
+    usuario: usuarios?.nome,
+    prioridade: prioridades?{descricao: prioridades.descricao, cor: prioridades.cor} : null 
+  };
+};
 
 const tarefaModel = {
+  // listar: async () => {
+  //   const lista = await prisma.tarefas.findMany({
+  //     include: incluirNomes,
+  //     orderBy: {id: 'asc'},
+  //   });
+  //   return lista.map(formatarTarefa);
+  // },
   listar: async () => {
-    const result = await pool.query(
-      `SELECT t.*, p.nome as projeto, u.nome as usuario, pr.descricao as prioridade, pr.cor as prioridade_cor FROM tarefas t
-      inner join projetos p on t.projeto_id = p.id
-      inner join usuarios u on t.usuario_id = u.id
-      inner join prioridades pr on t.idprioridade = pr.id
-      ORDER BY t.id`,
-    );
-    return result.rows;
+    const lista = await prisma.tarefas.findMany({
+      select:{
+        id: true,
+        texto: true,
+        coluna: true,
+        usuario_id: true,
+        projeto_id: true,
+        idprioridade: true,
+        finalizada_em: true,
+        iniciada_em: true,
+        ordem: true,
+        ...incluirNomes,
   },
+      orderBy: { id: 'asc'}
+  })
+
+  return lista.map(formatarTarefa);
+},
 
   // listarPorColuna: (coluna) => tarefas.filter((t) => t.coluna === coluna),
 
@@ -65,16 +98,12 @@ const tarefaModel = {
   // }),
 
   buscar: async (id) => {
-    const result = await pool.query(
-      // 'SELECT * FROM tarefas WHERE id = $1',[id]
-      `SELECT t.*, p.nome as projeto, u.nome as usuario, pr.descricao as prioridade, pr.cor as prioridade_cor FROM tarefas t
-      inner join projetos p on t.projeto_id = p.id
-      inner join usuarios u on t.usuario_id = u.id
-      inner join prioridades pr on t.idprioridade = pr.id
-      WHERE t.id=$1`,
-      [id],
+    const tarefa = await prisma.tarefas.findUnique({
+      where: {id},
+      include: incluirNomes,
+    }
     );
-    return result.rows[0] || null;
+    return tarefa ? formatarTarefa(tarefa) : null;
   },
 
   adicionar: async ({
