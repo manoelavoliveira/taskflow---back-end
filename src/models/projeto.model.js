@@ -7,17 +7,53 @@
 // let proximoIdProjeto = 4;
 
 const pool = require("../database/db");
+const prisma = require("../database/prisma")
+
+const incluir = {
+  tarefas: {select: { texto: true }},
+  usuarios: {select: { nome: true }},
+};
+
+function formatarProjeto(projeto){
+   const { tarefas, usuarios, ...resto } = projeto;
+  return {
+    ...resto,
+    tarefa: tarefas?.texto,
+    usuario: usuarios?.nome,
+  };
+};
 
 module.exports = {
   listar: async () => {
-    const result = await pool.query("SELECT * FROM projetos order by id");
-    return result.rows;
+    const lista = await prisma.projetos.findMany({
+      select:{
+        id: true,
+        nome: true,
+        descricao: true,
+        usuario_id: true,
+        criado_em: true,
+        ...incluir,
   },
+      orderBy: { nome: 'asc'}
+  })
+
+  return lista.map(formatarProjeto);
+},
+
   buscar: async (id) => {
-    const result = await pool.query("SELECT * FROM projetos WHERE id = $1", [
-      id,
-    ]);
-    return result.rows[0];
+    const projeto = await prisma.projetos.findUnique({
+      where: {id: id},
+      select: {
+        id: true,
+        nome: true,
+        descricao: true,
+        usuario_id: true,
+        criado_em: true,
+        ...incluir
+      }
+    }
+  );
+    return projeto ? formatarProjeto(projeto) : null;
   },
 
   adicionar: async (nome, descricao, usuario_id) => {
