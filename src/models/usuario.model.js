@@ -59,7 +59,7 @@ module.exports = {
         senha_hash: senha_hash
       }
     });
-    return usuario;
+    return usuario.nome && usuario.email;
     //   'INSERT INTO usuarios (nome, email, senha_hash) VALUES ($1, $2, $3) RETURNING id, nome, email',
     //   [nome, email, senha_hash]
     // );
