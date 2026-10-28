@@ -72,19 +72,19 @@ module.exports = {
     return result;
   },
 
-  atualizar: async ({id, nome, descricao}) => {
+  atualizar: async ({id, nome, descricao, usuario_id}) => {
     // const result = await pool.query(
     //   "UPDATE projetos SET nome = $1, descricao = $2 WHERE usuario_id = $3 RETURNING *",
     //   [nome, descricao, usuario_id, id],
     // );
     // return result.rows[0] || null;
-    const projetoAtual = await prisma.projetos.findUnique({
-      where: {id}
-    });
-    if (!projetoAtual) return null;
+    // const projetoAtual = await prisma.projetos.findUnique({
+    //   where: {id}
+    // });
+     if (!id) return null;
 
     const projeto = await prisma.projetos.update({
-      where: {id},
+      where: {id: id},
       data: {
         nome: nome,
         descricao: descricao,
@@ -97,7 +97,7 @@ module.exports = {
   remover: async (id) => {
     try {
       const projeto = await prisma.projetos.delete({
-        where: { id: id },
+        where: {id},
       });
       return projeto;
     } catch (erro) {
