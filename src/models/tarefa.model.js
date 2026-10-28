@@ -178,11 +178,22 @@ const tarefaModel = {
   },
 
   remover: async (id) => {
-    const result = await pool.query(
-      "DELETE FROM tarefas WHERE id=$1 RETURNING *",
-      [id],
-    );
-    return tarefaModel.buscar(result.rows[0].id) || null;
+    try {
+      const tarefa = await prisma.tarefas.delete({
+        where: { id: id },
+      });
+      return formatarTarefa(tarefa);
+    } catch (erro) {
+      if (erro.code === 'P2025') { 
+        return null; 
+      }
+      throw erro;
+    }
+    // const result = await pool.query(
+    //   "DELETE FROM tarefas WHERE id=$1 RETURNING *",
+    //   [id],
+    // );
+    // return tarefaModel.buscar(result.rows[0].id) || null;
   },
 
   estatisticas: async (filtroColuna) => {
