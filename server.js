@@ -17,6 +17,9 @@ const pool = require('./src/database/db');
 const tratarErros = require('./src/middlewares/erro.middleware.js');
 const criarErro = require('./src/utils/criarErro.js')
 
+const swaggerUi = require('swagger-ui-express');
+const openapi = require('./src/docs/openapi');
+
 app.use(cors({
   origin: process.env.CORS_ORIGIN || 'http://localhost:5173',
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
@@ -32,6 +35,7 @@ app.get("/", (req, res) => {
   res.json({ api: "TaskFlow", versao: "1.0", status: "online" });
 });
 
+app.use('/docs', swaggerUi.serve, swaggerUi.setup (openapi));
 
 app.use('/usuarios', autenticar, usuariosRoutes)
 app.use('/tarefas', autenticar, tarefasRoutes);

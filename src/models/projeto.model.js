@@ -99,7 +99,7 @@ module.exports = {
       const projeto = await prisma.projetos.delete({
         where: { id: id }
       });
-      return formatarProjeto(projeto);
+      return projeto;
     } catch (erro) {
       if (erro.code === 'P2025') 
         return null

@@ -87,8 +87,12 @@ const tarefaModel = {
     );
     return parseInt(result.rows[0].count);
   },
-  // contarPorProjeto: (projetoId) =>
-  //   tarefas.filter((t) => t.projetoId === projetoId).length,
+  contarPorProjeto: async (projetoId) => {
+   const result = await pool.query(
+    'SELECT COUNT(*) FROM tarefas WHERE projeto_id = $1',[projetoId]
+   ); 
+  return parseInt(result.rows[0].count)
+},
 
   // contarPorUsuario: (usuarioId) =>
   //   tarefas.filter((t) => t.usuarioId === usuarioId).length,

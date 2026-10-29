@@ -67,7 +67,9 @@ const projetosController = {
   },
 
   async remover(req, res) {
-    const removido = await projetoModel.remover(parseInt(req.params.id));
+    const id = parseInt(req.params.id);
+
+    const removido = projetoModel.remover(id);
 
     if (!removido)
       throw criarErro(404, "Projeto não encontrado para deletar");
