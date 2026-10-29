@@ -9,6 +9,20 @@
 const pool = require('../database/db');
 const prisma = require('../database/prisma')
 
+const incluirNomes = {
+  tarefas: { select: { texto: true }},
+  projetos: { select: { nome: true }}
+};
+
+function formatarUsuario(usuario) {
+  const { tarefas, projetos, ...resto} = usuario;
+  return {
+    ...resto,
+    tarefa: tarefas?.texto,
+    projeto: projetos?.nome
+  }
+}
+
 module.exports = {
   listar: async () => {
     // const result = await pool.query(
@@ -24,7 +38,7 @@ module.exports = {
       },
       orderBy: { id: 'asc'}
     })
-    return lista
+    return lista.map(formatarUsuario)
   },
 
   listarPorNome: async (nome) => {
@@ -41,9 +55,10 @@ module.exports = {
             id: true,
             nome: true,
             email: true,
+            include: incluirNomes
           }
       });
-      return usuario ? usuario : null
+      return usuario ? formatarUsuario(usuario) : null
   },
 
   buscarPorEmail: async (email) => {
@@ -59,7 +74,7 @@ module.exports = {
         senha_hash: senha_hash
       }
     });
-    return usuario.nome && usuario.email;
+    return formatarUsuario(usuario);
     //   'INSERT INTO usuarios (nome, email, senha_hash) VALUES ($1, $2, $3) RETURNING id, nome, email',
     //   [nome, email, senha_hash]
     // );
@@ -92,7 +107,7 @@ module.exports = {
         senha_hash: dados.senha_hash
       }
     });
-    return usuario
+    return formatarUsuario(usuario)
     // const {nome, email, senha_hash} = dados;
     // const result = await pool.query(
     //   'UPDATE usuarios SET nome=$1, email=$2 WHERE id=$3 RETURNING id, nome, email',
@@ -108,7 +123,7 @@ module.exports = {
       const usuario = await prisma.usuarios.delete({
         where: { id: id },
       });
-      return usuario;
+      return formatarUsuario(usuario);
     } catch (erro) {
       if (erro.code === 'P2025') {
         return null

@@ -72,38 +72,37 @@ module.exports = {
     return result;
   },
 
-  atualizar: async ({id, nome, descricao, usuario_id}) => {
+  atualizar: async (id, dados) => {
     // const result = await pool.query(
     //   "UPDATE projetos SET nome = $1, descricao = $2 WHERE usuario_id = $3 RETURNING *",
     //   [nome, descricao, usuario_id, id],
     // );
     // return result.rows[0] || null;
-    // const projetoAtual = await prisma.projetos.findUnique({
-    //   where: {id}
-    // });
-     if (!id) return null;
+    const projetoAtual = await prisma.projetos.findUnique({
+      where: {id}
+    });
+     if (!projetoAtual) return null;
 
     const projeto = await prisma.projetos.update({
       where: {id: id},
       data: {
-        nome: nome,
-        descricao: descricao,
-        usuario_id: usuario_id
+        nome: dados.nome,
+        descricao: dados.descricao,
+        usuario_id: dados.usuario_id
       },
     })
-    return projeto;
+    return formatarProjeto(projeto);
   },
 
   remover: async (id) => {
     try {
       const projeto = await prisma.projetos.delete({
-        where: {id},
+        where: { id: id }
       });
-      return projeto;
+      return formatarProjeto(projeto);
     } catch (erro) {
-      if (erro.code === 'P2025') {
+      if (erro.code === 'P2025') 
         return null
-      }
       throw erro;
     }
     // const result = await pool.query(
