@@ -20,7 +20,6 @@ const schemas = {
         type: "object",
         properties: {
           mensagem: { type: "string", example: "Tarefa não encontrada" },
-
           detalhes: { type: "array", items: { type: "string" } },
         },
       },
