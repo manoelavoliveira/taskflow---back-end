@@ -82,12 +82,24 @@ const schemas = {
       projeto_id: { type: "integer", example: 1 },
       idprioridade: { type: "integer", example: 1 },
       ordem: { type: "integer", example: 1 },
-      // projeto: { type: } ,
-      // usuario: "Luara",
-      // prioridade: "alta",
-      // prioridade_cor: "#EF4444"
+      projeto: { type: 'string', example: 'TaskFlow' },
+      usuario: { type: 'string', example: 'Ana Lima' },
+      prioridade: { type: 'string', example: 'Médio' },
+      prioridade_cor: { type: 'string', example: '#F5A623' },
     },
   },
+  TarefaEntrada: { // o que o cliente ENVIA no POST e no PUT
+    type: 'object',
+    required: ['texto', 'coluna', 'usuario_id', 'projeto_id', 'idprioridade'],
+    properties: {
+      texto: { type: 'string', example: 'Revisar layout' },
+      coluna: { type: 'string', enum: ['afazer', 'andamento', 'concluido'] },
+      usuario_id: { type: 'integer', example: 1 },
+      projeto_id: { type: 'integer', example: 1 },
+      idprioridade: { type: 'integer', example: 2 },
+      ordem: { type: 'integer', example: 0 },
+    },
+    },
 };
 
 module.exports = { paths, schemas };
