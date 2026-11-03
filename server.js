@@ -20,6 +20,15 @@ const criarErro = require('./src/utils/criarErro.js')
 const swaggerUi = require('swagger-ui-express');
 const openapi = require('./src/docs/openapi');
 
+const SWAGGER_CDN = 'https://cdn.jsdelivr.net/npm/swagger-ui-dist@5.17.14';
+app.use('/docs', swaggerUi.serve, swaggerUi.setup(openapi, {
+customCssUrl: `${SWAGGER_CDN}/swagger-ui.css`,
+customJs: [
+`${SWAGGER_CDN}/swagger-ui-bundle.js`,
+`${SWAGGER_CDN}/swagger-ui-standalone-preset.js`,
+],
+}));
+
 app.use(cors({
   origin: process.env.CORS_ORIGIN || 'http://localhost:5173',
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
