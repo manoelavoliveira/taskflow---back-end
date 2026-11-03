@@ -88,7 +88,7 @@ const schemas = {
       prioridade_cor: { type: 'string', example: '#F5A623' },
     },
   },
-  TarefaEntrada: { // o que o cliente ENVIA no POST e no PUT
+  TarefaEntrada: {
     type: 'object',
     required: ['texto', 'coluna', 'usuario_id', 'projeto_id', 'idprioridade'],
     properties: {
