@@ -62,7 +62,7 @@ const tarefasController = {
     //   return res
     //     .status(400)
     //     .json({ erro: "Coluna inválida. Use: afazer, andamento ou concluido" });
-    //  if (!texto) return res.status(400).json({ erro: "Texto obrigatório!" });
+      if (!texto) return res.status(400).json({ erro: "Texto obrigatório!" });
     // console.log(req.usuario);
     // const dados = {
     //   ...req.body,

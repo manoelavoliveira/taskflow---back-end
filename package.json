@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "explorar.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest",
     "dev": "nodemon server.js",
     "start": "node server.js",
     "postinstall": "prisma generate"
@@ -21,6 +21,7 @@
   "homepage": "https://github.com/manoelavoliveira/taskflow---back-end#readme",
   "description": "",
   "devDependencies": {
+    "jest": "^30.5.2",
     "nodemon": "^3.1.14",
     "prisma": "^6.19.3"
   },
