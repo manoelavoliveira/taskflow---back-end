@@ -1,7 +1,7 @@
 const criarErro = require ('../src/utils/criarErro');
 
 describe('criarErro', () => {
-    teste('devolve um Error com o status e a mensagem', () => {
+    test('devolve um Error com o status e a mensagem', () => {
         const erro = criarErro(404, 'Tarefa não encontrada');
 
         expect(erro).toBeInstanceOf(Error);
