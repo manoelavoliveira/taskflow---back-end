@@ -1,16 +1,16 @@
 function validarContentType(req, res, next) {
-    const metodosComBody = ['POST', 'PUT', 'PATCH'];
+  const metodosComBody = ["POST", "PUT", "PATCH"];
 
-    if (metodosComBody.includes(req.method)){
-        const contentType = req.headers['content-type'];
+  if (metodosComBody.includes(req.method)) {
+    const contentType = req.headers["content-type"];
 
-        if (!contentType || !contentType.includes('application/json')) {
-            return res.status(415).json({
-                erro: 'Content-Type inválido. Use: application/json'
-            });
-        }
+    if (!contentType || !contentType.includes("application/json")) {
+      return res.status(415).json({
+        erro: "Content-Type inválido. Use: application/json",
+      });
     }
-    next();
+  }
+  next();
 }
 
 module.exports = validarContentType;

@@ -1,8 +1,8 @@
-const criarErro = require('../utils/criarErro')
+const criarErro = require("../utils/criarErro");
 
 function validar(schema, origem) {
   return function (req, res, next) {
-    const dados = req[origem || 'body'] || {};
+    const dados = req[origem || "body"] || {};
     const erros = [];
 
     for (const campo in schema) {
@@ -15,25 +15,19 @@ function validar(schema, origem) {
         continue;
       }
 
-      if (ausente)
-        continue;      
+      if (ausente) continue;
 
-      if (regras.tipo === 'inteiro') {
-        const numero = typeof valor === 'string' 
-        ? Number(valor) : valor;
+      if (regras.tipo === "inteiro") {
+        const numero = typeof valor === "string" ? Number(valor) : valor;
 
         if (!Number.isInteger(numero) || numero <= 0) {
           erros.push(`O campo '${campo}' deve ser um inteiro positivo`);
-        } 
-        } else if (regras.tipo && typeof valor !== regras.tipo) {
-          console.log('type: ', typeof valor)
-          console.log(regras.tipo);
-          erros.push(`O campo '${campo}' deve ser do tipo ${regras.tipo}`);
+        }
+      } else if (regras.tipo && typeof valor !== regras.tipo) {
+        console.log("type: ", typeof valor);
+        console.log(regras.tipo);
+        erros.push(`O campo '${campo}' deve ser do tipo ${regras.tipo}`);
       }
-
-      // if (!ausente && regras.tipo && typeof valor !== regras.tipo) {
-      //   erros.push(`O campo '${campo}' deve ser do tipo ${regras.tipo}`);
-      // }
 
       if (regras.enum && !regras.enum.includes(valor)) {
         erros.push(
@@ -57,10 +51,9 @@ function validar(schema, origem) {
         );
     }
 
-      if (erros.length > 0) 
-        throw criarErro(400, 'Dados inválidos', erros);
+    if (erros.length > 0) throw criarErro(400, "Dados inválidos", erros);
 
-      next();    
+    next();
   };
 }
 module.exports = validar;

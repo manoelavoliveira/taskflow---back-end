@@ -6,7 +6,7 @@ function formatarTarefa (tarefa) {
         projeto: projetos?.nome,
         usuario: usuarios?.nome,
         prioridade: prioridades?.descricao,
-        cor: prioridades?.cor
+        prioridade_cor: prioridades?.cor
     };
 }
 

@@ -1,6 +1,6 @@
 const schemas = {
   id: {
-    id: { obrigatorio: true, tipo: "inteiro"}
+    id: { obrigatorio: true, tipo: "inteiro" },
   },
   tarefa: {
     texto: { obrigatorio: true, tipo: "string", minLength: 3 },
@@ -15,7 +15,7 @@ const schemas = {
       enum: ["afazer", "andamento", "concluido"],
     },
     usuario_id: { obrigatorio: true, tipo: "inteiro" },
-    projeto_id: {obrigatorio: true, tipo: "inteiro"}
+    projeto_id: { obrigatorio: true, tipo: "inteiro" },
   },
 
   usuario: {
@@ -32,9 +32,8 @@ const schemas = {
   descricao: {
     obrigatorio: false,
     tipo: "string",
-    maxLength: 200
-    
-  }
+    maxLength: 200,
+  },
 };
 
 module.exports = schemas;

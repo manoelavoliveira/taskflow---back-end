@@ -1,49 +1,17 @@
-// let tarefas = [
-//   {
-//     id: 1,
-//     texto: "Estudar Node",
-//     prioridade: "alta",
-//     coluna: "afazer",
-//     idUsuario: 1,
-//   },
-//   {
-//     id: 2,
-//     texto: "Estudar Back-End",
-//     prioridade: "alta",
-//     coluna: "andamento",
-//     idUsuario: 2,
-//   },
-//   {
-//     id: 3,
-//     texto: "Testar PostMan",
-//     prioridade: "media",
-//     coluna: "concluido",
-//     idUsuario: 3,
-//   },
-// ];
-// let proximoId = 4;
-
 const pool = require("../database/db");
 const prisma = require("../database/prisma");
-const formatarTarefa = require("../utils/formatarTarefa")
+const formatarTarefa = require("../utils/formatarTarefa");
 
 const incluirNomes = {
-  projetos: {select: { nome: true }},
-  usuarios: {select: { nome: true }},
-  prioridades: {select: { descricao: true, cor: true }},
+  projetos: { select: { nome: true } },
+  usuarios: { select: { nome: true } },
+  prioridades: { select: { descricao: true, cor: true } },
 };
 
 const tarefaModel = {
-  // listar: async () => {
-  //   const lista = await prisma.tarefas.findMany({
-  //     include: incluirNomes,
-  //     orderBy: {id: 'asc'},
-  //   });
-  //   return lista.map(formatarTarefa);
-  // },
   listar: async () => {
     const lista = await prisma.tarefas.findMany({
-      select:{
+      select: {
         id: true,
         texto: true,
         coluna: true,
@@ -54,12 +22,12 @@ const tarefaModel = {
         iniciada_em: true,
         ordem: true,
         ...incluirNomes,
-  },
-      orderBy: { id: 'asc'}
-  })
+      },
+      orderBy: { id: "asc" },
+    });
 
-  return lista.map(formatarTarefa);
-},
+    return lista.map(formatarTarefa);
+  },
 
   // listarPorColuna: (coluna) => tarefas.filter((t) => t.coluna === coluna),
 
@@ -77,11 +45,12 @@ const tarefaModel = {
     return parseInt(result.rows[0].count);
   },
   contarPorProjeto: async (projetoId) => {
-   const result = await pool.query(
-    'SELECT COUNT(*) FROM tarefas WHERE projeto_id = $1',[projetoId]
-   ); 
-  return parseInt(result.rows[0].count)
-},
+    const result = await pool.query(
+      "SELECT COUNT(*) FROM tarefas WHERE projeto_id = $1",
+      [projetoId],
+    );
+    return parseInt(result.rows[0].count);
+  },
 
   // contarPorUsuario: (usuarioId) =>
   //   tarefas.filter((t) => t.usuarioId === usuarioId).length,
@@ -94,7 +63,7 @@ const tarefaModel = {
 
   buscar: async (id) => {
     const tarefa = await prisma.tarefas.findUnique({
-      where: {id: id},
+      where: { id: id },
       select: {
         id: true,
         texto: true,
@@ -105,10 +74,9 @@ const tarefaModel = {
         finalizada_em: true,
         iniciada_em: true,
         ordem: true,
-        ...incluirNomes
+        ...incluirNomes,
       },
-    }
-    );
+    });
     return tarefa ? formatarTarefa(tarefa) : null;
   },
 
@@ -129,14 +97,14 @@ const tarefaModel = {
         projeto_id: projeto_id,
         ordem: ordem || 0,
       },
-        include: incluirNomes
-  });
+      include: incluirNomes,
+    });
     return formatarTarefa(result);
   },
 
   atualizar: async (id, dados) => {
     const tarefaAtual = await prisma.tarefas.findUnique({
-      where: {id}
+      where: { id },
     });
     if (!tarefaAtual) return null;
 
@@ -154,7 +122,7 @@ const tarefaModel = {
     }
 
     const tarefa = await prisma.tarefas.update({
-      where: {id},
+      where: { id },
       data: {
         texto: dados.texto,
         coluna: dados.coluna,
@@ -167,7 +135,7 @@ const tarefaModel = {
       include: incluirNomes,
     });
 
-    return formatarTarefa(tarefa)
+    return formatarTarefa(tarefa);
   },
 
   remover: async (id) => {
@@ -177,16 +145,11 @@ const tarefaModel = {
       });
       return formatarTarefa(tarefa);
     } catch (erro) {
-      if (erro.code === 'P2025') { 
-        return null; 
+      if (erro.code === "P2025") {
+        return null;
       }
       throw erro;
     }
-    // const result = await pool.query(
-    //   "DELETE FROM tarefas WHERE id=$1 RETURNING *",
-    //   [id],
-    // );
-    // return tarefaModel.buscar(result.rows[0].id) || null;
   },
 
   estatisticas: async (filtroColuna) => {
@@ -240,4 +203,4 @@ const tarefaModel = {
   },
 };
 
-module.exports = tarefaModel
+module.exports = tarefaModel;

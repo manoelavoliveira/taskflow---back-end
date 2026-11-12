@@ -5,7 +5,7 @@ function listarTodas() {
 }
 
 function buscarPorId(id) {
-  return tarefas.find(t => t.id === id);
+  return tarefas.find((t) => t.id === id);
 }
 
 function adicionar(tarefa) {
