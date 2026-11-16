@@ -1,77 +1,12 @@
-require("dotenv").config();
+const app = require('./app.js')
 
-const express = require("express");
-const app = express();
-const PORTA = process.env.PORTA || 3000;
-
-const autenticar = require("./src/middlewares/autenticar");
-
-const authRoutes = require("./src/routes/auth.routes.js");
-const tarefasRoutes = require("./src/routes/tarefas.routes");
-const usuariosRoutes = require("./src/routes/usuarios.routes.js");
-const projetosRoutes = require("./src/routes/projetos.routes.js");
-const prioridadesRoutes = require("./src/routes/prioridades.routes.js");
-
-const validarContentType = require("./src/middlewares/validarContentType");
-const logger = require("./src/middlewares/logger");
-
-const cors = require("cors");
 const pool = require("./src/database/db");
-const tratarErros = require("./src/middlewares/erro.middleware.js");
-const criarErro = require("./src/utils/criarErro.js");
-
-const swaggerUi = require("swagger-ui-express");
-const openapi = require("./src/docs/openapi");
-
-const SWAGGER_CDN = "https://cdn.jsdelivr.net/npm/swagger-ui-dist@5.17.14";
-app.use(
-  "/docs",
-  swaggerUi.serve,
-  swaggerUi.setup(openapi, {
-    customCssUrl: `${SWAGGER_CDN}/swagger-ui.css`,
-    customJs: [
-      `${SWAGGER_CDN}/swagger-ui-bundle.js`,
-      `${SWAGGER_CDN}/swagger-ui-standalone-preset.js`,
-    ],
-  }),
-);
-
-app.use(
-  cors({
-    origin: process.env.CORS_ORIGIN || "http://localhost:5173",
-    methods: ["GET", "POST", "PUT", "DELETE"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-    maxAge: 86400,
-  }),
-);
-
-app.use(express.json());
-app.use(validarContentType);
-app.use(logger);
-
-app.get("/", (req, res) => {
-  res.json({ api: "TaskFlow", versao: "1.0", status: "online" });
-});
-
-app.use("/docs", swaggerUi.serve, swaggerUi.setup(openapi));
-
-app.use("/usuarios", autenticar, usuariosRoutes);
-app.use("/tarefas", autenticar, tarefasRoutes);
-app.use("/projetos", autenticar, projetosRoutes);
-app.use("/prioridades", autenticar, prioridadesRoutes);
-app.use("/auth", authRoutes);
+const PORTA = process.env.PORTA || 3000;
 
 pool.query("SELECT NOW()", (err, res) => {
   if (err) console.error("Erro ao conectar:", err.message);
   else console.log("Banco conectado:", res.rows[0].now);
 });
-
-app.use((req, res) => {
-  const rota = `${req.method} ${req.url}`;
-  throw criarErro(404, `Rota ${rota} não encontrada`);
-});
-
-app.use(tratarErros);
 
 app.listen(PORTA, () => {
   console.log("Servidor rodando em " + PORTA);
