@@ -1,6 +1,17 @@
 const request = require("supertest");
 const jwt = require("jsonwebtoken");
 const app = require("../app.js");
+const pool = require("../src/database/db");
+const prisma = require("../src/database/prisma");
+
+afterAll(async () => {
+    await prisma.$disconnect();
+    await pool.end();
+});
+
+const USUARIO_ID = 1;
+const PROJETO_ID = 11;
+const PRIORIDADE_ID = 1;
 
 const token = jwt.sign({ id: 1, nome: "Teste" }, process.env.JWT_SECRET);
 
@@ -54,5 +65,44 @@ describe('rotas da API', () => {
             .send("texto solto");
         
         expect(resposta.status).toBe(415);
+    });
+
+    test('GET /prioridades com token: 200 e uma lista', async () => {
+        const resposta = await request(app)
+            .get('/prioridades')
+            .set('Authorization', `Bearer ${token}`);
+
+        expect(resposta.status).toBe(200);
+        expect(Array.isArray(resposta.body)).toBe(true);
+    });
+
+    test('POST /tarefas cria (201) e o DELETE remove', async () => {
+        const nova = {
+            texto: "Tarefa criada pelo teste",
+            coluna: "afazer",
+            projeto_id: PROJETO_ID,            
+            usuario_id: USUARIO_ID,
+            idprioridade: PRIORIDADE_ID,
+        };
+
+        const criada = await request(app).post('/tarefas')
+            .set('Authorization', `Bearer ${token}`).send(nova);
+
+            expect(criada.status).toBe(201);
+            expect(criada.body).toHaveProperty('id');
+
+        const removida = await request(app).delete(`/tarefas/${criada.body.id}`)
+            .set('Authorization', `Bearer ${token}`);
+                
+            expect(removida.status).toBe(200);
+    });
+
+    test('GET /tarefas/9999 responde 404', async () => {
+        const resposta = await request(app)
+            .get('/tarefas/9999')
+            .set('Authorization', `Bearer ${token}`);
+
+        expect(resposta.status).toBe(404);
+        expect(resposta.body.erro.mensagem).toBe("Tarefa não encontrada");
     });
 });

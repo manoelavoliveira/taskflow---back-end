@@ -1,7 +1,7 @@
-const app = require('./app.js')
-
+const app = require("./app.js");
 const pool = require("./src/database/db");
 const PORTA = process.env.PORTA || 3000;
+const prisma = require("../src/database/prisma");
 
 pool.query("SELECT NOW()", (err, res) => {
   if (err) console.error("Erro ao conectar:", err.message);
