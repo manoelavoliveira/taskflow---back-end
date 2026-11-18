@@ -105,4 +105,23 @@ describe('rotas da API', () => {
         expect(resposta.status).toBe(404);
         expect(resposta.body.erro.mensagem).toBe("Tarefa não encontrada");
     });
+
+    test('GET /tarefas com token: 200 e uma lista', async () => {
+        const resposta = await request(app)
+            .get('/tarefas')
+            .set('Authorization', `Bearer ${token}`);
+
+        expect(resposta.status).toBe(200);
+        expect(Array.isArray(resposta.body)).toBe(true);
+    });
+
+    test('GET /projetos com token: 200 e uma lista', async () => {
+        const resposta = await request(app)
+            .get('/projetos')
+            .set('Authorization', `Bearer ${token}`);
+
+        expect(resposta.status).toBe(200);
+        expect(Array.isArray(resposta.body)).toBe(true);
+    });
+    
 });
